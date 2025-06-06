@@ -65,15 +65,49 @@ class TransaksiBengkelController extends Controller
         DB::beginTransaction();
 
         try {
+            // Ambil data layanan
             $layanan = Layanan::findOrFail($validated['layanan_id']);
             $totalBiaya = $layanan->biaya;
 
+            // Buat transaksi bengkel
             $transaksi = TransaksiBengkel::create([
                 'pelanggan_id' => $validated['pelanggan_id'],
-                'layanan_id' => $validated['layanan_id'],
-                'total_biaya' => 0, // sementara
+                'layanan_id'   => $validated['layanan_id'],
+                'total_biaya'  => 0, // sementara, nanti diupdate
             ]);
 
+            $stokKurang = [];
+
+            // Cek stok dulu kalau ada suku cadang dipilih
+            if (!empty($validated['sukuCadangs'])) {
+                foreach ($validated['sukuCadangs'] as $sc) {
+                    if (isset($sc['selected'])) {
+                        $sukuCadang = SukuCadang::findOrFail($sc['id']);
+                        $jumlah = $sc['jumlah'];
+
+                        if ($sukuCadang->stok < $jumlah) {
+                            $stokKurang[] = "{$sukuCadang->nama} |  Sisa Stok :  {$sukuCadang->stok} |";
+                        }
+                    }
+                }
+            }
+
+            // Kalau ada stok kurang, rollback & kirim notif
+            if (!empty($stokKurang)) {
+                DB::rollBack();
+
+                $pesan = "Beberapa suku cadang tidak mencukupi stoknya :<br><ul>";
+                foreach ($stokKurang as $item) {
+                    $pesan .= "<li>{$item}</li>";
+                }
+                $pesan .= "</ul>";
+
+                return redirect()->back()
+                    ->with('warning_html', $pesan)
+                    ->withInput();
+            }
+
+            // Proses insert suku cadang ke pivot & kurangi stok
             if (!empty($validated['sukuCadangs'])) {
                 foreach ($validated['sukuCadangs'] as $sc) {
                     if (isset($sc['selected'])) {
@@ -81,16 +115,22 @@ class TransaksiBengkelController extends Controller
                         $jumlah = $sc['jumlah'];
                         $subtotal = $sukuCadang->harga * $jumlah;
 
+                        // Attach ke pivot
                         $transaksi->sukuCadangs()->attach($sukuCadang->id, [
                             'jumlah' => $jumlah,
                             'subtotal' => $subtotal,
                         ]);
 
+                        // Kurangi stok
+                        $sukuCadang->decrement('stok', $jumlah);
+
+                        // Tambahkan ke total biaya
                         $totalBiaya += $subtotal;
                     }
                 }
             }
 
+            // Update total biaya transaksi
             $transaksi->update(['total_biaya' => $totalBiaya]);
 
             DB::commit();
@@ -98,12 +138,15 @@ class TransaksiBengkelController extends Controller
             return redirect()->route('transaksiBengkel.index')
                 ->with('success', 'Transaksi berhasil!');
         } catch (\Exception $e) {
-            DB::rollback();
+            DB::rollBack();
 
             return back()->withErrors('Gagal menyimpan transaksi: ' . $e->getMessage())
-                         ->withInput();
+                        ->withInput();
         }
     }
+
+
+
 
     public function show($id)
     {

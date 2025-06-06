@@ -236,6 +236,17 @@
                                 </div>
                             </a>
                         </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link primary-hover-bg justify-content-between"
+                                href="{{ route('laporan.stok_suku_cadang') }}" aria-expanded="false">
+                                <div class="d-flex align-items-center gap-6">
+                                <span class="d-flex">
+                                    <iconify-icon icon="solar:tablet-line-duotone" class=""></iconify-icon>
+                                </span>
+                                <span class="hide-menu">Stok Suku Cadang</span>
+                                </div>
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </nav>

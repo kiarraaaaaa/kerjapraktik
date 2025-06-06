@@ -7,6 +7,11 @@
     <div class="card">
         <div class="card-body">
             <h4 class="card-title mb-5 text-center">Form Tambah Transaksi</h4>
+            @if (session('warning_html'))
+                <div class="alert alert-warning">
+                    {!! session('warning_html') !!}
+                </div>
+            @endif
             <form method="POST" action="{{ route('transaksiBengkel.store') }}">
                 @csrf
                 <div class="row mb-3">
