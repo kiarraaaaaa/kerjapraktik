@@ -14,13 +14,10 @@
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             @endif
-            
+
             <h4 class="card-title mb-4">Daftar Pelanggan</h4>
 
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <a href="{{ route('pelanggan.create') }}" class="btn btn-primary">
-                    <i class="ti ti-user-plus"></i> Tambah Pelanggan
-                </a>
 
                 <form action="{{ route('pelanggan.index') }}" method="GET" class="d-flex" role="search">
                     <input type="text" name="search" class="form-control me-2"
@@ -29,6 +26,7 @@
                         <i class="ti ti-search"></i>
                     </button>
                 </form>
+
             </div>
 
             <div class="table-responsive rounded-4">
@@ -37,25 +35,42 @@
                         <tr>
                             <th>No</th>
                             <th>Nama</th>
+                            <th>email</th>
                             <th>No Hp</th>
                             <th>Alamat</th>
                             <th>Kendaraan</th>
-                            <th>Aksi</th>
+                            @if (Auth::user()->role === 'A')
+                                <th>Aksi</th>
+                            @endif
                         </tr>
                     </thead>
                     <tbody>
                         @forelse ($pelanggan as $index => $item)
                             <tr>
                                 <td>{{ $index + 1 }}</td>
-                                <td>{{ $item['nama'] }}</td>
+                                <td>{{ $item['name'] }}</td>
+                                <td>{{ $item['email'] }}</td>
                                 <td>{{ $item['nohp'] }}</td>
                                 <td>{{ $item['alamat'] }}</td>
                                 <td>{{ $item['kendaraan'] }}</td>
                                 <td>
-                                    <a href="{{ route('pelanggan.edit', $item['id']) }}"
-                                        class="btn btn-sm btn-warning">
-                                        <i class="ti ti-pencil"></i> Edit
-                                    </a>
+                                    <div class="d-flex justify-content-center gap-1">
+                                        @if (Auth::user()->role === 'A')
+                                            <a href="{{ route('pelanggan.edit', $item['id']) }}" class="btn btn-sm btn-warning">
+                                                <i class="ti ti-pencil"></i> Edit
+                                            </a>
+                                        @endif
+
+                                        @if (Auth::user()->role === 'A')
+                                            <form action="{{ route('pelanggan.destroy', $item['id']) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus pelanggan ini?')" style="display:inline;">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-sm btn-danger">
+                                                    <i class="ti ti-trash"></i> Hapus
+                                                </button>
+                                            </form>
+                                        @endif
+                                    </div>
                                 </td>
                             </tr>
                         @empty

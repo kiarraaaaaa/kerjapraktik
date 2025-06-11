@@ -3,74 +3,67 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pelanggan;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class PelangganController extends Controller
 {
     public function index(Request $request)
     {
-        // Ambil keyword dari form pencarian
         $search = $request->input('search');
 
-        // Cek kalau ada pencarian
         if ($search) {
-            // Filter data pelanggan yang sesuai dengan keyword
-            $pelanggan = Pelanggan::where('nama', 'like', '%' . $search . '%')
+            $users = User::where('name', 'like', '%' . $search . '%')
+                ->orWhere('email', 'like', '%' . $search . '%')
                 ->orWhere('nohp', 'like', '%' . $search . '%')
                 ->orWhere('alamat', 'like', '%' . $search . '%')
                 ->orWhere('kendaraan', 'like', '%' . $search . '%')
                 ->get();
-        }else{
-            // Kalau tidak ada pencarian, tampilkan semua
-            $pelanggan = Pelanggan::all();
+        } else {
+            $users = User::all();
         }
 
-        return view('pelanggan.index')->with('pelanggan',$pelanggan);
+        return view('pelanggan.index')->with('pelanggan', $users);
     }
+
 
     public function create()
     {
-        return view('pelanggan.create');
+        //
     }
 
     public function store(Request $request)
     {
-        $val = $request -> validate([
-            'nama' => 'required|max:25',
-            'nohp' => 'required|max:13',
-            'alamat' => 'required|max:40',
-            'kendaraan' => 'required|max:30'
-        ]);
-
-        Pelanggan::create($val);
-        return redirect()->route('pelanggan.index')->with('success',' Data '. $val['nama'].' berhasil ditambah ');
+        //
     }
 
-    public function show(Pelanggan $pelanggan)
+    public function show()
     {
         //
     }
 
-    public function edit(Pelanggan $pelanggan)
+    public function edit(User $pelanggan)
     {
         return view('pelanggan.edit')->with('pelanggan', $pelanggan);
     }
 
-    public function update(Request $request, Pelanggan $pelanggan)
+    public function update(Request $request, User $pelanggan)
     {
-        $val = $request -> validate([
-            'nama' => 'required|max:25',
+        $val = $request->validate([
+            'name' => 'required|max:50',
+            'email' => 'required|email|unique:users,email,' . $pelanggan->id,
             'nohp' => 'required|max:13',
-            'alamat' => 'required|max:40',
-            'kendaraan' => 'required|max:30'
+            'alamat' => 'required|max:100',
+            'kendaraan' => 'required|max:50',
         ]);
 
-        $pelanggan -> update($val);
-        return redirect()->route('pelanggan.index')->with('success',' Data '. $val['nama'].' berhasil diperbarui ');
+        $pelanggan->update($val);
+        return redirect()->route('pelanggan.index')->with('success', 'Data ' . $val['name'] . ' berhasil diperbarui');
     }
 
-    public function destroy(Pelanggan $pelanggan)
+    public function destroy(User $pelanggan)
     {
-        //
+        $pelanggan->delete();
+        return redirect()->route('pelanggan.index')->with('success', 'Data berhasil dihapus');
     }
 }

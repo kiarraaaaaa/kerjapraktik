@@ -6,7 +6,7 @@
 <div class="col-10 mt-5 mx-auto">
     <div class="card">
         <div class="card-body">
-            <h4 class="card-title mb-5 text-center ">Form Layanan Bengkel</h4>
+            <h4 class="card-title mb-5 text-center ">Form Tambah Layanan Bengkel</h4>
             <form method="POST" action="{{ route('layanan.store') }}" enctype="multipart/form-data">
                 @csrf
                 <div class="row">

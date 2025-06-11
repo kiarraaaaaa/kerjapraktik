@@ -18,9 +18,11 @@
             <h4 class="card-title mb-4">Daftar Layanan Bengkel</h4>
 
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <a href="{{ route('layanan.create') }}" class="btn btn-primary">
-                    <i class="ti ti-car"></i> Tambah Layanan
-                </a>
+                @if (Auth::user()->role === 'A')
+                    <a href="{{ route('layanan.create') }}" class="btn btn-primary">
+                        <i class="ti ti-car"></i> Tambah Layanan
+                    </a>
+                @endif
 
                 <form action="{{ route('layanan.index') }}" method="GET" class="d-flex" role="search">
                     <input type="text" name="search" class="form-control me-2"
@@ -48,9 +50,15 @@
                                 <td>{{ $item['nama_layanan'] }}</td>
                                 <td>Rp.{{ $item['biaya'] }}</td>
                                 <td>
-                                    <a href="{{ route('layanan.edit', $item['id']) }}"
-                                        class="btn btn-sm btn-warning">
-                                        <i class="ti ti-pencil"></i> Edit
+                                    @if (Auth::user()->role === 'A')
+                                        <a href="{{ route('layanan.edit', $item['id']) }}"
+                                            class="btn btn-sm btn-warning">
+                                            <i class="ti ti-pencil"></i> Edit
+                                        </a>
+                                    @endif
+                                    <a href="{{ route('transaksiBengkel.create', ['layanan_id' => $item->id]) }}"
+                                    class="btn btn-success btn-sm w-10">
+                                        <i class="ti ti-shopping-cart"></i> Pesan
                                     </a>
                                 </td>
                             </tr>

@@ -5,7 +5,6 @@
 @section('content')
 
 <div class="container-fluid">
-
     <div class="card mb-4 shadow-sm rounded-4">
         <div class="card-body">
             @if (session('success'))
@@ -17,10 +16,12 @@
 
             <h4 class="card-title mb-4">Daftar Suku Cadang</h4>
 
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <a href="{{ route('sukuCadang.create') }}" class="btn btn-primary">
-                    <i class="ti ti-tools"></i> Tambah Suku Cadang
-                </a>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                @if (Auth::user()->role === 'A')
+                    <a href="{{ route('sukuCadang.create') }}" class="btn btn-primary">
+                        <i class="ti ti-tools"></i> Tambah Suku Cadang
+                    </a>
+                @endif
 
                 <form action="{{ route('sukuCadang.index') }}" method="GET" class="d-flex" role="search">
                     <input type="text" name="search" class="form-control me-2"
@@ -31,47 +32,67 @@
                 </form>
             </div>
 
-            <div class="table-responsive rounded-4">
-                <table class="table table-hover table-bordered border-primary align-middle text-center mb-0">
-                    <thead class="bg-primary text-white">
-                        <tr>
-                            <th>No</th>
-                            <th>Kode</th>
-                            <th>Nama</th>
-                            <th>Harga</th>
-                            <th>Stok</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($sukuCadang as $index => $item)
-                            <tr>
-                                <td>{{ $index + 1 }}</td>
-                                <td>{{ $item['kode'] }}</td>
-                                <td>{{ $item['nama'] }}</td>
-                                <td>Rp.{{ $item['harga'] }}</td>
-                                <td>{{ $item['stok'] }}</td>
-                                <td>
-                                    <a href="{{ route('sukuCadang.edit', $item['id']) }}"
-                                        class="btn btn-sm btn-warning">
-                                        <i class="ti ti-pencil"></i> Edit
-                                    </a>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="6" class="text-center text-muted">
-                                    Data Suku Cadang belum tersedia.
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
+            <hr>
 
+            <div class="row">
+                @forelse ($sukuCadang as $item)
+                    <div class="col-md-4 col-lg-3 mb-4 mt-4">
+                        <div class="card h-100 shadow-sm rounded-4">
+                            <img src="{{ $item['foto'] }}" class="card-img-top" alt="{{ $item['nama'] }}" style="height: 300px; object-fit: cover;">
+                            <div class="card-body">
+                                <h5 class="card-title text-center mb-3">{{ $item['nama'] }}</h5>
+
+                                <div class="mb-1 d-flex">
+                                    <div style="width: 90px;">Kode</div>
+                                    <div style="width: 10px;">:</div>
+                                    <div class="fw-bold">{{ $item['kode'] }}</div>
+                                </div>
+
+                                <div class="mb-1 d-flex">
+                                    <div style="width: 90px;">Harga</div>
+                                    <div style="width: 10px;">:</div>
+                                    <div class="fw-bold">Rp. {{ number_format($item['harga'], 0, ',', '.') }}</div>
+                                </div>
+
+                                <div class="mb-3 d-flex">
+                                    <div style="width: 90px;">Stok </div>
+                                    <div style="width: 10px;">:</div>
+                                    <div class="fw-bold">
+                                        @if ($item['stok'] == 0)
+                                            <span class="text-danger">Out of Stock</span>
+                                        @else
+                                            {{ $item['stok'] }}
+                                        @endif
+                                    </div>
+                                </div>
+
+
+                                <div class="text-center">
+                                    @if (Auth::user()->role === 'A')
+                                        <a href="{{ route('sukuCadang.edit', $item->id) }}" class="btn btn-warning btn-sm w-100 mb-1">
+                                            <i class="ti ti-pencil"></i> Edit
+                                        </a>
+                                        <a href="{{ route('transaksiBengkel.create', ['sukuCadang_id' => $item->id]) }}" class="btn btn-success btn-sm w-100">
+                                            <i class="ti ti-shopping-cart"></i> Pesan
+                                        </a>
+                                    @else
+                                        @if ($item['stok'] > 0)
+                                            <a href="{{ route('transaksiBengkel.create', ['sukuCadang_id' => $item['id']]) }}" class="btn btn-success btn-sm w-100">
+                                                <i class="ti ti-shopping-cart"></i> Pesan
+                                            </a>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @empty
+                    <div class="col-12">
+                        <p class="text-center text-muted">Data suku cadang belum tersedia.</p>
+                    </div>
+                @endforelse
+            </div>
         </div>
     </div>
-
 </div>
-
 @endsection

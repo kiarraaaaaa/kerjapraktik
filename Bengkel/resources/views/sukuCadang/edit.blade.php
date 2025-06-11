@@ -13,6 +13,16 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-floating mb-3">
+                            <input type="text" class="form-control @error('foto') is-invalid @enderror"
+                                   id="foto" name="foto" value="{{ old('foto') ? old('foto'): $sukuCadang['foto'] }}" placeholder="Masukan URL Foto ">
+                            <label class="fw-bold text-dark" for="foto">URL Foto</label>
+                            @error('foto')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating mb-3">
                             <input type="text" class="form-control @error('kode') is-invalid @enderror"
                                    id="kode" name="kode" value="{{ old('kode') ? old('kode'): $sukuCadang['kode'] }}" placeholder="Masukan Kode Suku Cadang" readonly>
                             <label class="fw-bold text-dark" for="kode">Kode Suku Cadang</label>
@@ -21,6 +31,8 @@
                             @enderror
                         </div>
                     </div>
+                </div>
+                <div class="row">
                     <div class="col-md-6">
                         <div class="form-floating mb-3">
                             <input type="text" class="form-control @error('nama') is-invalid @enderror"
@@ -31,8 +43,6 @@
                             @enderror
                         </div>
                     </div>
-                </div>
-                <div class="row">
                     <div class="col-md-6">
                         <div class="form-floating mb-3">
                             <input type="number" class="form-control @error('harga') is-invalid @enderror"

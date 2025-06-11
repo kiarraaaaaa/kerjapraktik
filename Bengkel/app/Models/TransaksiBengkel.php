@@ -14,13 +14,13 @@ class TransaksiBengkel extends Model
 
     protected $fillable =
     [
-        'pelanggan_id', 'layanan_id', 'total_biaya'
+        'nama','user_id', 'layanan_id', 'total_biaya'
     ];
 
-    public function pelanggan()
-    {
-        return $this->belongsTo(Pelanggan::class);
-    }
+    public function user()
+{
+    return $this->belongsTo(User::class);
+}
 
     public function layanan()
     {

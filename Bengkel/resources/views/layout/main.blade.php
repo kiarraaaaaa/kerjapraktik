@@ -98,7 +98,7 @@
             <ul class="navbar-nav flex-row align-items-center list-unstyled m-0">
                 <li class="nav-item dropdown">
                     <a class="nav-link d-flex align-items-center gap-2" href="javascript:void(0)" id="drop2" data-bs-toggle="dropdown" aria-expanded="false">
-                        <img src="../assets/images/profile/user1.jpg" alt="User" width="35" height="35" class="rounded-circle">
+                        <img src="{{ url('assets/images/profile/user1.jpg') }}" alt="User" width="35" height="35" class="rounded-circle">
                         <span class="fw-semibold text-info">{{ Auth::user()->name }}</span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop2">
@@ -148,7 +148,7 @@
                         <span class="hide-menu">Home</span>
                         </li>
                         <li class="sidebar-item">
-                        <a class="sidebar-link primary-hover-bg" href="./index.html" aria-expanded="false">
+                        <a class="sidebar-link primary-hover-bg" href="{{ url('dashboard') }}" aria-expanded="false">
                             <iconify-icon icon="solar:atom-line-duotone"></iconify-icon>
                             <span class="hide-menu">Beranda</span>
                         </a>
@@ -160,17 +160,19 @@
                         <iconify-icon icon="solar:menu-dots-linear" class="nav-small-cap-icon fs-4"></iconify-icon>
                         <span class="hide-menu">Data Master</span>
                         </li>
-                        <li class="sidebar-item">
-                            <a class="sidebar-link primary-hover-bg justify-content-between"
-                            href="{{ url('pelanggan') }}" aria-expanded="false">
-                                <div class="d-flex align-items-center gap-6">
-                                    <span class="d-flex">
-                                        <iconify-icon icon="solar:user-line-duotone" class=""></iconify-icon>
-                                    </span>
-                                    <span class="hide-menu">Pelanggan</span>
-                                </div>
-                            </a>
-                        </li>
+                        @if (Auth::user()->role === 'A')
+                            <li class="sidebar-item">
+                                <a class="sidebar-link primary-hover-bg justify-content-between"
+                                href="{{ url('pelanggan') }}" aria-expanded="false">
+                                    <div class="d-flex align-items-center gap-6">
+                                        <span class="d-flex">
+                                            <iconify-icon icon="solar:user-line-duotone" class=""></iconify-icon>
+                                        </span>
+                                        <span class="hide-menu">Pelanggan</span>
+                                    </div>
+                                </a>
+                            </li>
+                        @endif
                         <li class="sidebar-item">
                             <a class="sidebar-link primary-hover-bg justify-content-between"
                             href="{{ url('sukuCadang') }}" aria-expanded="false">
@@ -197,8 +199,8 @@
                         <span class="sidebar-divider lg"></span>
                         </li>
                         <li class="nav-small-cap">
-                        <iconify-icon icon="solar:menu-dots-linear" class="nav-small-cap-icon fs-4"></iconify-icon>
-                        <span class="hide-menu">Transaksi</span>
+                            <iconify-icon icon="solar:menu-dots-linear" class="nav-small-cap-icon fs-4"></iconify-icon>
+                            <span class="hide-menu">Transaksi</span>
                         </li>
                         <li class="sidebar-item">
                             <a class="sidebar-link primary-hover-bg justify-content-between " href="{{ url('transaksiBengkel') }}"
@@ -214,43 +216,45 @@
                         <li>
                         <span class="sidebar-divider lg"></span>
                         </li>
-                        <li class="nav-small-cap">
-                            <iconify-icon icon="solar:menu-dots-linear" class="nav-small-cap-icon fs-4"></iconify-icon>
-                            <span class="hide-menu"> Laporan Bengkel </span>
-                        </li>
-                        <li class="sidebar-item">
-                            <a class="sidebar-link primary-hover-bg justify-content-between"
-                                href="{{ route('laporan.penjualan_suku_cadang') }}" aria-expanded="false">
-                                <div class="d-flex align-items-center gap-6">
-                                <span class="d-flex">
-                                    <iconify-icon icon="solar:tablet-line-duotone" class=""></iconify-icon>
-                                </span>
-                                <span class="hide-menu">Penjualan Suku Cadang</span>
-                                </div>
-                            </a>
-                        </li>
-                        <li class="sidebar-item">
-                            <a class="sidebar-link primary-hover-bg justify-content-between"
-                                href="{{ route('laporan.transaksi_layanan') }}" aria-expanded="false">
-                                <div class="d-flex align-items-center gap-6">
-                                <span class="d-flex">
-                                    <iconify-icon icon="solar:tablet-line-duotone" class=""></iconify-icon>
-                                </span>
-                                <span class="hide-menu">Transaksi Layanan Bengkel</span>
-                                </div>
-                            </a>
-                        </li>
-                        <li class="sidebar-item">
-                            <a class="sidebar-link primary-hover-bg justify-content-between"
-                                href="{{ route('laporan.stok_suku_cadang') }}" aria-expanded="false">
-                                <div class="d-flex align-items-center gap-6">
-                                <span class="d-flex">
-                                    <iconify-icon icon="solar:tablet-line-duotone" class=""></iconify-icon>
-                                </span>
-                                <span class="hide-menu">Stok Suku Cadang</span>
-                                </div>
-                            </a>
-                        </li>
+                        @if (Auth::user()->role === 'A')
+                            <li class="nav-small-cap">
+                                <iconify-icon icon="solar:menu-dots-linear" class="nav-small-cap-icon fs-4"></iconify-icon>
+                                <span class="hide-menu"> Laporan Bengkel </span>
+                            </li>
+                            <li class="sidebar-item">
+                                <a class="sidebar-link primary-hover-bg justify-content-between"
+                                    href="{{ route('laporan.penjualan_suku_cadang') }}" aria-expanded="false">
+                                    <div class="d-flex align-items-center gap-6">
+                                    <span class="d-flex">
+                                        <iconify-icon icon="solar:tablet-line-duotone" class=""></iconify-icon>
+                                    </span>
+                                    <span class="hide-menu">Penjualan Suku Cadang</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="sidebar-item">
+                                <a class="sidebar-link primary-hover-bg justify-content-between"
+                                    href="{{ route('laporan.transaksi_layanan') }}" aria-expanded="false">
+                                    <div class="d-flex align-items-center gap-6">
+                                    <span class="d-flex">
+                                        <iconify-icon icon="solar:tablet-line-duotone" class=""></iconify-icon>
+                                    </span>
+                                    <span class="hide-menu">Transaksi Layanan Bengkel</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="sidebar-item">
+                                <a class="sidebar-link primary-hover-bg justify-content-between"
+                                    href="{{ route('laporan.stok_suku_cadang') }}" aria-expanded="false">
+                                    <div class="d-flex align-items-center gap-6">
+                                    <span class="d-flex">
+                                        <iconify-icon icon="solar:tablet-line-duotone" class=""></iconify-icon>
+                                    </span>
+                                    <span class="hide-menu">Stok Suku Cadang</span>
+                                    </div>
+                                </a>
+                            </li>
+                        @endif
                     </ul>
                 </div>
             </nav>

@@ -13,19 +13,17 @@
                 {{-- Pelanggan & Layanan --}}
                 <div class="row mb-3">
                     <div class="col-md-6">
-                        <label for="pelanggan_id">Pelanggan</label>
-                        <select id="pelanggan_id" name="pelanggan_id" class="form-control text-dark" required>
-                            @foreach($pelanggan as $item)
-                                <option value="{{ $item['id'] }}" {{ $item['id'] == $transaksi['pelanggan_id'] ? 'selected' : '' }}>
-                                    {{ $item['nama'] }}
-                                </option>
-                            @endforeach
-                        </select>
+                        <label for="nama" class="form-label">Nama Pembeli</label>
+                        <input type="text" name="nama" id="nama" class="form-control @error('nama') is-invalid @enderror text-dark"
+                            value="{{ old('nama') ? old('nama'): $transaksi['nama'] }}" placeholder="Masukan Nama Pembeli">
+                        @error('nama')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
 
                     <div class="col-md-6">
                         <label for="layanan_id">Layanan</label>
-                        <select id="layanan_id" name="layanan_id" class="form-control text-dark" required>
+                        <select id="layanan_id" name="layanan_id" class="form-control text-dark mt-2" required>
                             @foreach($layanan as $item)
                                 <option value="{{ $item['id'] }}" {{ $item['id'] == $transaksi['layanan_id'] ? 'selected' : '' }}>
                                     {{ $item['nama_layanan'] }}
@@ -60,7 +58,7 @@
                     <button type="submit" class="btn btn-primary">
                         <i class="ti ti-device-floppy fs-5"></i> Submit
                     </button>
-                    <a href="{{ route('transaksiBengkel.index') }}" class="btn btn-secondary ms-2">Cancel</a>
+                    <a href="{{ route('transaksiBengkel.index') }}" class="btn btn-transparant ms-2">Cancel</a>
                 </div>
             </form>
         </div>

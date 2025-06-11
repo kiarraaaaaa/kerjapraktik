@@ -14,7 +14,7 @@ class SukuCadang extends Model
 
     protected $fillable =
     [
-        'kode','nama','harga','stok'
+        'foto','kode','nama','harga','stok'
     ];
 
     protected static function boot()

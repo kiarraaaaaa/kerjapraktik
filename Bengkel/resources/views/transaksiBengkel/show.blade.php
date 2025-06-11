@@ -9,12 +9,8 @@
             <h4 class="card-title text-center mb-4">Detail Transaksi</h4>
 
             <div class="mb-3">
-                <strong>Nama Pelanggan : </strong>
-                <p>{{ $transaksi['pelanggan']['nama'] }}</p>
-                <strong>No Hp Pelanggan : </strong>
-                <p>{{ $transaksi['pelanggan']['nohp'] }}</p>
-                <strong>Alamat Pelanggan : </strong>
-                <p>{{ $transaksi['pelanggan']['alamat'] }}</p>
+                <strong>Nama Costumer : </strong>
+                <p>{{ $transaksi['nama'] }}</p>
             </div>
 
             <div class="mb-3" >

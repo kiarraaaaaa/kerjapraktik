@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('suku_cadangs', function (Blueprint $table) {
             $table->uuid('id')->primary();
+            $table->string('foto');
             $table->string('kode')->unique();
             $table->string('nama');
             $table->integer('harga');

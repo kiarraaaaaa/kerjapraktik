@@ -13,10 +13,10 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-floating mb-3">
-                            <input type="text" class="form-control @error('nama') is-invalid @enderror"
-                                   id="nama" name="nama" value="{{ old('nama') ? old('nama'): $pelanggan['nama'] }}" placeholder="Masukan Nama Pelanggan">
-                            <label class="fw-bold text-dark" for="nama">Nama Pelanggan</label>
-                            @error('nama')
+                            <input type="text" class="form-control @error('name') is-invalid @enderror"
+                                   id="name" name="name" value="{{ old('name') ? old('name') : $pelanggan['name'] }}" placeholder="Masukan Nama Pelanggan">
+                            <label class="fw-bold text-dark" for="name">Nama Pelanggan</label>
+                            @error('name')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
@@ -24,20 +24,32 @@
 
                     <div class="col-md-6">
                         <div class="form-floating mb-3">
+                            <input type="email" class="form-control @error('email') is-invalid @enderror"
+                                   id="email" name="email" value="{{ old('email') ? old('email') : $pelanggan['email'] }}" placeholder="Masukan Email Pelanggan">
+                            <label class="fw-bold text-dark" for="email">Nama Pelanggan</label>
+                            @error('email')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-floating mb-3">
                             <input type="number" class="form-control @error('nohp') is-invalid @enderror"
-                                   id="nohp" name="nohp" value="{{ old('nohp') ? old('nohp'): $pelanggan['nohp'] }}" placeholder="Masukan No Telepon Pelanggan">
+                                   id="nohp" name="nohp" value="{{ old('nohp') ? old('nohp') : $pelanggan['nohp'] }}" placeholder="Masukan No Telepon Pelanggan">
                             <label class="fw-bold text-dark" for="nohp">No Telepon</label>
                             @error('nohp')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
                     </div>
-                </div>
-                <div class="row">
+
                     <div class="col-md-6">
                         <div class="form-floating mb-3">
                             <input type="text" class="form-control @error('alamat') is-invalid @enderror"
-                                   id="alamat" name="alamat" value="{{ old('alamat') ? old('alamat'): $pelanggan['alamat'] }}" placeholder="Masukan Alamat Pelanggan">
+                                   id="alamat" name="alamat" value="{{ old('alamat') ? old('alamat') : $pelanggan['alamat'] }}" placeholder="Masukan Alamat Pelanggan">
                             <label class="fw-bold text-dark" for="alamat">Alamat</label>
                             @error('alamat')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -48,7 +60,7 @@
                     <div class="col-md-6">
                         <div class="form-floating mb-3">
                             <input type="text" class="form-control @error('kendaraan') is-invalid @enderror"
-                                   id="kendaraan" name="kendaraan" value="{{ old('kendaraan') ? old('kendaraan'): $pelanggan['kendaraan'] }}" placeholder="Masukan Kendaraan Pelanggan">
+                                   id="kendaraan" name="kendaraan" value="{{ old('kendaraan') ? old('kendaraan') : $pelanggan['kendaraan'] }}" placeholder="Masukan Kendaraan Pelanggan">
                             <label class="fw-bold text-dark" for="kendaraan">Kendaraan</label>
                             @error('kendaraan')
                                 <div class="invalid-feedback">{{ $message }}</div>

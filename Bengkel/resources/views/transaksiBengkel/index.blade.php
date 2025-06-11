@@ -36,7 +36,7 @@
                     <thead class="bg-primary text-white">
                         <tr>
                             <th>No</th>
-                            <th>Pelanggan</th>
+                            <th>Nama Costumer</th>
                             <th>Layanan</th>
                             <th>Suku Cadang</th>
                             <th>Total Biaya</th>
@@ -48,7 +48,7 @@
                         @forelse ($transaksi as $index => $item)
                             <tr>
                                 <td>{{ $index + 1 }}</td>
-                                <td>{{ $item['pelanggan']['nama'] }}</td>
+                                <td>{{ $item['nama'] }}</td>
                                 <td>{{ $item['layanan']['nama_layanan'] }}</td>
                                 <td>
                                     @if($item['sukuCadangs']->count())
@@ -64,10 +64,12 @@
                                 <td>Rp {{ number_format($item['total_biaya'], 0, ',', '.') }}</td>
                                 <td>{{ $item['created_at']->format('d-m-Y') }}</td>
                                 <td>
-                                    <a href="{{ route('transaksiBengkel.edit', $item['id']) }}"
-                                        class="btn btn-sm btn-warning">
-                                        <i class="ti ti-pencil"></i>
-                                    </a>
+                                    @if (Auth::user()->role === 'A')
+                                        <a href="{{ route('transaksiBengkel.edit', $item['id']) }}"
+                                            class="btn btn-sm btn-warning">
+                                            <i class="ti ti-pencil"></i>
+                                        </a>
+                                    @endif
                                     <a href="{{ route('transaksiBengkel.show', $item->id) }}" class="btn btn-info btn-sm">
                                         <i class="ti ti-eye"></i>
                                     </a>

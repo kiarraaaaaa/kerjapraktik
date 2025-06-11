@@ -36,6 +36,7 @@ class SukuCadangController extends Controller
     public function store(Request $request)
     {
         $val = $request -> validate([
+            'foto'      => 'required|url',
             'kode'      => 'required|max:5',
             'nama'      => 'required|max:35',
             'harga'     => 'required',
@@ -59,6 +60,7 @@ class SukuCadangController extends Controller
     public function update(Request $request, SukuCadang $sukuCadang)
     {
         $val = $request -> validate([
+            'foto'      => 'required|url',
             'kode'      => 'required|max:5',
             'nama'      => 'required|max:35',
             'harga'     => 'required',
