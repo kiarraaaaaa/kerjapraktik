@@ -31,18 +31,30 @@
                                 <div class="mb-7">
                                     <label for="name" class="form-label fw-bold">Nama Lengkap</label>
                                     <input class="form-control py-6" id="name" name="name" type="text" placeholder="Masukan Nama Lengkap" aria-label="inputexample">
+                                    @error('name')
+                                        <div class="text-danger small">{{ $message }}</div>
+                                    @enderror
                                 </div>
                                 <div class="mb-7">
                                     <label for="email" class="form-label fw-bold">Email Address</label>
                                     <input type="email" class="form-control py-6" id="email" name="email" placeholder="Masukan Email Address" aria-describedby="emailHelp">
+                                    @error('email')
+                                        <div class="text-danger small">{{ $message }}</div>
+                                    @enderror
                                 </div>
                                 <div class="mb-9">
                                     <label for="password" class="form-label fw-bold">Password</label>
                                     <input type="password" class="form-control py-6" id="password" name="password" placeholder="Masukan Password">
+                                    @error('password')
+                                        <div class="text-danger small">{{ $message }}</div>
+                                    @enderror
                                 </div>
                                 <div class="mb-9">
                                     <label for="password_confirmation" class="form-label fw-bold">Konfirmasi Password</label>
                                     <input type="password" class="form-control py-6" id="password_confirmation" name="password_confirmation" placeholder="Masukan Konfirmasi Password ">
+                                    @error('password_confirmation')
+                                        <div class="text-danger small">{{ $message }}</div>
+                                    @enderror
                                 </div>
                                 <button type="submit" class="btn btn-primary w-100 mb-7 rounded-pill">Register</button>
                                 <div class="d-flex align-items-center">

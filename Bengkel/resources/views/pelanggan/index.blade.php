@@ -53,25 +53,27 @@
                                 <td>{{ $item['nohp'] }}</td>
                                 <td>{{ $item['alamat'] }}</td>
                                 <td>{{ $item['kendaraan'] }}</td>
-                                <td>
-                                    <div class="d-flex justify-content-center gap-1">
-                                        @if (Auth::user()->role === 'A')
-                                            <a href="{{ route('pelanggan.edit', $item['id']) }}" class="btn btn-sm btn-warning">
-                                                <i class="ti ti-pencil"></i> Edit
-                                            </a>
-                                        @endif
+                                @if (Auth::user()->role === 'A')
+                                    <td>
+                                        <div class="d-flex justify-content-center gap-1">
+                                            @if (Auth::user()->role === 'A')
+                                                <a href="{{ route('pelanggan.edit', $item['id']) }}" class="btn btn-sm btn-warning">
+                                                    <i class="ti ti-pencil"></i> Edit
+                                                </a>
+                                            @endif
 
-                                        @if (Auth::user()->role === 'A')
-                                            <form action="{{ route('pelanggan.destroy', $item['id']) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus pelanggan ini?')" style="display:inline;">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-danger">
-                                                    <i class="ti ti-trash"></i> Hapus
-                                                </button>
-                                            </form>
-                                        @endif
-                                    </div>
-                                </td>
+                                            @if (Auth::user()->role === 'A')
+                                                <form action="{{ route('pelanggan.destroy', $item['id']) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus pelanggan ini?')" style="display:inline;">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-sm btn-danger">
+                                                        <i class="ti ti-trash"></i> Hapus
+                                                    </button>
+                                                </form>
+                                            @endif
+                                        </div>
+                                    </td>
+                                @endif
                             </tr>
                         @empty
                             <tr>

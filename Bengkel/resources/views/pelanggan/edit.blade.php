@@ -1,12 +1,12 @@
 @extends('layout.main')
 
-@section('title', 'Edit Pelanggan')
+@section('title', 'Edit Data')
 
 @section('content')
 <div class="col-10 mt-5 mx-auto">
     <div class="card">
         <div class="card-body">
-            <h4 class="card-title mb-5 text-center ">Form Edit Pelanggan</h4>
+            <h4 class="card-title mb-5 text-center ">Form Edit Data</h4>
             <form method="POST" action="{{ route('pelanggan.update', $pelanggan['id']) }}" enctype="multipart/form-data">
                 @method('PUT')
                 @csrf
@@ -15,7 +15,7 @@
                         <div class="form-floating mb-3">
                             <input type="text" class="form-control @error('name') is-invalid @enderror"
                                    id="name" name="name" value="{{ old('name') ? old('name') : $pelanggan['name'] }}" placeholder="Masukan Nama Pelanggan">
-                            <label class="fw-bold text-dark" for="name">Nama Pelanggan</label>
+                            <label class="fw-bold text-dark" for="name">Nama</label>
                             @error('name')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -26,14 +26,14 @@
                         <div class="form-floating mb-3">
                             <input type="email" class="form-control @error('email') is-invalid @enderror"
                                    id="email" name="email" value="{{ old('email') ? old('email') : $pelanggan['email'] }}" placeholder="Masukan Email Pelanggan">
-                            <label class="fw-bold text-dark" for="email">Nama Pelanggan</label>
+                            <label class="fw-bold text-dark" for="email">Email</label>
                             @error('email')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-floating mb-3">

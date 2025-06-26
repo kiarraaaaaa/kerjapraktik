@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\KeranjangController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LaporanController;
@@ -24,14 +25,11 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware('role:A')->group(function () {
-    Route::get('/pelanggan', [PelangganController::class, 'index'])->name('pelanggan.index');
-});
-
-Route::middleware('role:A')->group(function () {
-    Route::get('/pelanggan/{pelanggan}/edit', [PelangganController::class, 'edit'])->name('pelanggan.edit');
-    Route::put('/pelanggan/{pelanggan}', [PelangganController::class, 'update'])->name('pelanggan.update');
     Route::delete('/pelanggan/{pelanggan}', [PelangganController::class, 'destroy'])->name('pelanggan.destroy');
 });
+Route::get('/pelanggan', [PelangganController::class, 'index'])->name('pelanggan.index');
+Route::get('/pelanggan/{pelanggan}/edit', [PelangganController::class, 'edit'])->name('pelanggan.edit');
+Route::put('/pelanggan/{pelanggan}', [PelangganController::class, 'update'])->name('pelanggan.update');
 
 Route::middleware('role:A,U')->group(function () {
     Route::get('/sukuCadang', [SukuCadangController::class, 'index'])->name('sukuCadang.index');
@@ -66,10 +64,15 @@ Route::middleware('role:A')->group(function () {
     Route::get('/transaksiBengkel/{transaksiBengkel}/edit', [LayananController::class, 'edit'])->name('transaksiBengkel.edit');
     Route::put('/transaksiBengkel/{transaksiBengkel}', [LayananController::class, 'update'])->name('transaksiBengkel.update');
 });
-// Route::resource('pelanggan', PelangganController::class);
-// Route::resource('sukuCadang', SukuCadangController::class);
-// Route::resource('layanan', LayananController::class);
-//Route::resource('transaksiBengkel', TransaksiBengkelController::class);
+
+Route::get('/keranjang', [KeranjangController::class, 'index'])->name('keranjang.index');
+    Route::post('/keranjang/tambah/{sukuCadangId}', [KeranjangController::class, 'tambah'])->name('keranjang.tambah');
+    Route::get('/keranjang/tambah/{sukuCadang_id}', [KeranjangController::class, 'tambah'])->name('keranjang.tambah');
+
+    // Route::post('/keranjang/update/{id}', [KeranjangController::class, 'update'])->name('keranjang.update');
+    Route::post('/keranjang/{id}/update', [KeranjangController::class, 'update'])->name('keranjang.update');
+    Route::post('/keranjang/hapus/{id}', [KeranjangController::class, 'hapus'])->name('keranjang.hapus');
+
 Route::get('/laporan/penjualan-suku-cadang', [LaporanController::class, 'penjualanSukuCadang'])->name('laporan.penjualan_suku_cadang');
 Route::get('/laporan/transaksi_layanan', [LaporanController::class, 'transaksiLayanan'])->name('laporan.transaksi_layanan');
 Route::get('/laporan/stok_suku_cadang', [LaporanController::class, 'stokSukuCadang'])->name('laporan.stok_suku_cadang');

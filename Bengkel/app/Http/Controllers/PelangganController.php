@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pelanggan;
+use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -11,6 +12,13 @@ class PelangganController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search');
+        $user = Auth::user();
+
+        if ($user->role === 'A') {
+            $query = User::where('role', 'U');
+        } else {
+            $query = User::where('id', $user->id);
+        }
 
         if ($search) {
             $users = User::where('name', 'like', '%' . $search . '%')
@@ -22,6 +30,8 @@ class PelangganController extends Controller
         } else {
             $users = User::all();
         }
+
+        $users = $query->get();
 
         return view('pelanggan.index')->with('pelanggan', $users);
     }

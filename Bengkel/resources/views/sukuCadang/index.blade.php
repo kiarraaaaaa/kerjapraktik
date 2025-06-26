@@ -4,8 +4,8 @@
 
 @section('content')
 
-<div class="container-fluid">
-    <div class="card mb-4 shadow-sm rounded-4">
+<div class="container-fluid pt-3">
+    <div class="card mb-3 shadow-sm rounded-4">
         <div class="card-body">
             @if (session('success'))
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -36,7 +36,7 @@
 
             <div class="row">
                 @forelse ($sukuCadang as $item)
-                    <div class="col-md-4 col-lg-3 mb-4 mt-4">
+                    <div class="col-md-4 col-lg-3 mb-4">
                         <div class="card h-100 shadow-sm rounded-4">
                             <img src="{{ $item['foto'] }}" class="card-img-top" alt="{{ $item['nama'] }}" style="height: 300px; object-fit: cover;">
                             <div class="card-body">
@@ -65,20 +65,24 @@
                                         @endif
                                     </div>
                                 </div>
-
-
                                 <div class="text-center">
                                     @if (Auth::user()->role === 'A')
                                         <a href="{{ route('sukuCadang.edit', $item->id) }}" class="btn btn-warning btn-sm w-100 mb-1">
                                             <i class="ti ti-pencil"></i> Edit
                                         </a>
-                                        <a href="{{ route('transaksiBengkel.create', ['sukuCadang_id' => $item->id]) }}" class="btn btn-success btn-sm w-100">
+                                        <a href="{{ route('transaksiBengkel.create', ['sukuCadang_id' => $item->id]) }}" class="btn btn-success btn-sm w-100 mb-1">
                                             <i class="ti ti-shopping-cart"></i> Pesan
+                                        </a>
+                                        <a href="{{ route('keranjang.tambah', ['sukuCadang_id' => $item->id]) }}" class="btn btn-outline-secondary btn-sm w-100">
+                                            <i class="ti ti-basket"></i> Tambah ke Keranjang
                                         </a>
                                     @else
                                         @if ($item['stok'] > 0)
-                                            <a href="{{ route('transaksiBengkel.create', ['sukuCadang_id' => $item['id']]) }}" class="btn btn-success btn-sm w-100">
+                                            <a href="{{ route('transaksiBengkel.create', ['sukuCadang_id' => $item['id']]) }}" class="btn btn-success btn-sm w-100 mb-1">
                                                 <i class="ti ti-shopping-cart"></i> Pesan
+                                            </a>
+                                            <a href="{{ route('keranjang.tambah', ['sukuCadang_id' => $item->id]) }}" class="btn btn-outline-secondary btn-sm w-100">
+                                                <i class="ti ti-basket"></i> Tambah ke Keranjang
                                             </a>
                                         @endif
                                     @endif
