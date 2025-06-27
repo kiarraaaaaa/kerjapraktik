@@ -45,13 +45,32 @@ class TransaksiBengkelController extends Controller
         $layanan = Layanan::all();
         $selectedLayanan = $request->get('layanan_id');
 
-        return view('transaksiBengkel.create', compact('sukuCadangs', 'layanan','selectedLayanan'));
+        // Ambil data suku cadang terpilih dari request
+        $selectedSukuCadangs = [];
+        if ($request->has('sukuCadangs')) {
+            foreach ($request->input('sukuCadangs') as $sc) {
+                if (isset($sc['selected']) && isset($sc['id'])) {
+                    $selectedSukuCadangs[$sc['id']] = [
+                        'selected' => true,
+                        'jumlah' => $sc['jumlah'] ?? 1,
+                    ];
+                }
+            }
+        }
+
+        return view('transaksiBengkel.create', compact(
+            'sukuCadangs',
+            'layanan',
+            'selectedLayanan',
+            'selectedSukuCadangs'
+        ));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
             'nama' => 'required|string|max:100',
+            'alamat' => 'required|string|max:100',
             'layanan_id' => 'required|exists:layanans,id',
             'sukuCadangs' => 'nullable|array',
             'sukuCadangs.*.selected' => 'nullable|in:1',
@@ -67,6 +86,7 @@ class TransaksiBengkelController extends Controller
 
             $transaksi = TransaksiBengkel::create([
                 'nama' => $validated['nama'],
+                'alamat' => $validated['alamat'],
                 'layanan_id' => $validated['layanan_id'],
                 'total_biaya' => 0,
                 'user_id' => Auth::id(),

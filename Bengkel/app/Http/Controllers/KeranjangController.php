@@ -14,8 +14,9 @@ class KeranjangController extends Controller
             ->where('user_id', Auth::id())
             ->get();
 
-        return view('keranjang.index', compact('keranjang'));
+        return view('keranjang.index')->with('keranjang', $keranjang ?? collect());
     }
+
 
     /**
      * Tambahkan suku cadang ke keranjang
@@ -58,19 +59,14 @@ class KeranjangController extends Controller
         return redirect()->back()->with('success', 'Jumlah diperbarui.');
     }
 
-    /**
-     * Hapus barang dari keranjang
-     */
-    public function hapus($id)
+    public function hapusTerpilih(Request $request)
     {
-        $keranjang = Keranjang::findOrFail($id);
+        $ids = explode(',', $request->input('ids'));
 
-        if ($keranjang->user_id !== Auth::id()) {
-            abort(403);
-        }
+        Keranjang::whereIn('id', $ids)
+            ->where('user_id', Auth::id())
+            ->delete();
 
-        $keranjang->delete();
-
-        return back()->with('success', 'Barang dihapus dari keranjang.');
+        return back()->with('success', 'Item terpilih berhasil dihapus dari keranjang.');
     }
 }

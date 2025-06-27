@@ -18,7 +18,7 @@
         <div class="col-md-3">
             <div class="card text-bg-success shadow-sm">
                 <div class="card-body">
-                    <h6 class="card-title">Pendapatan Bulan Ini</h6>
+                    <h6 class="card-title">Pendapatan Bulan</h6>
                     <h3 class="card-text">Rp{{ number_format($totalPendapatan, 0, ',', '.') }}</h3>
                 </div>
             </div>

@@ -36,35 +36,33 @@
 
             <div class="row">
                 @forelse ($sukuCadang as $item)
-                    <div class="col-md-4 col-lg-3 mb-4">
+                    <div class="col-md-6 col-lg-4 mb-4"> {{-- WAS col-md-4 col-lg-3 --}}
                         <div class="card h-100 shadow-sm rounded-4">
-                            <img src="{{ $item['foto'] }}" class="card-img-top" alt="{{ $item['nama'] }}" style="height: 300px; object-fit: cover;">
+                            <img src="{{ $item['foto'] }}" class="card-img-top" alt="{{ $item['nama'] }}" style="height: 350px; object-fit: cover;">
                             <div class="card-body">
                                 <h5 class="card-title text-center mb-3">{{ $item['nama'] }}</h5>
 
-                                <div class="mb-1 d-flex">
-                                    <div style="width: 90px;">Kode</div>
-                                    <div style="width: 10px;">:</div>
-                                    <div class="fw-bold">{{ $item['kode'] }}</div>
+                                {{-- Gunakan grid untuk label dan value agar tidak turun --}}
+                                <div class="mb-1 d-flex justify-content-between">
+                                    <span class="text-muted">Kode</span>
+                                    <span class="fw-bold">{{ $item['kode'] }}</span>
                                 </div>
-
-                                <div class="mb-1 d-flex">
-                                    <div style="width: 90px;">Harga</div>
-                                    <div style="width: 10px;">:</div>
-                                    <div class="fw-bold">Rp. {{ number_format($item['harga'], 0, ',', '.') }}</div>
+                                <div class="mb-1 d-flex justify-content-between">
+                                    <span class="text-muted">Harga</span>
+                                    <span class="fw-bold">Rp {{ number_format($item['harga'], 0, ',', '.') }}</span>
                                 </div>
-
-                                <div class="mb-3 d-flex">
-                                    <div style="width: 90px;">Stok </div>
-                                    <div style="width: 10px;">:</div>
-                                    <div class="fw-bold">
+                                <div class="mb-3 d-flex justify-content-between">
+                                    <span class="text-muted">Stok</span>
+                                    <span class="fw-bold">
                                         @if ($item['stok'] == 0)
                                             <span class="text-danger">Out of Stock</span>
                                         @else
                                             {{ $item['stok'] }}
                                         @endif
-                                    </div>
+                                    </span>
                                 </div>
+
+                                {{-- Tombol --}}
                                 <div class="text-center">
                                     @if (Auth::user()->role === 'A')
                                         <a href="{{ route('sukuCadang.edit', $item->id) }}" class="btn btn-warning btn-sm w-100 mb-1">

@@ -71,6 +71,8 @@ Route::get('/keranjang', [KeranjangController::class, 'index'])->name('keranjang
 
     // Route::post('/keranjang/update/{id}', [KeranjangController::class, 'update'])->name('keranjang.update');
     Route::post('/keranjang/{id}/update', [KeranjangController::class, 'update'])->name('keranjang.update');
+    Route::post('/keranjang/hapus-terpilih', [KeranjangController::class, 'hapusTerpilih'])->name('keranjang.hapusTerpilih');
+
     Route::post('/keranjang/hapus/{id}', [KeranjangController::class, 'hapus'])->name('keranjang.hapus');
 
 Route::get('/laporan/penjualan-suku-cadang', [LaporanController::class, 'penjualanSukuCadang'])->name('laporan.penjualan_suku_cadang');

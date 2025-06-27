@@ -1,8 +1,63 @@
 @extends('layout.main')
 
+@section('title','Keranjang')
+
 @section('content')
-<div class="container py-4">
-    <h3 class="mb-4"><i class="ti ti-shopping-cart"></i> Keranjang Belanja</h3>
+<style>
+    .checkout-footer-fixed {
+        position: fixed;
+        bottom: 0;
+        left: 250px; /* Sesuaikan sidebar */
+        right: 0;
+        background-color: #fff;
+        border-top: 1px solid #e0e0e0;
+        z-index: 1100;
+        padding: 8px 20px;
+        box-shadow: 0 -1px 6px rgba(0, 0, 0, 0.08);
+    }
+
+    .checkout-footer-fixed .container-fluid {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .checkout-footer-fixed .btn {
+        padding: 6px 16px;
+        font-size: 14px;
+    }
+
+    @media (max-width: 768px) {
+        .checkout-footer-fixed {
+            left: 0;
+            padding: 12px 16px;
+        }
+
+        .checkout-footer-fixed .container-fluid {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .checkout-footer-fixed .btn {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="container py-4" style="margin-bottom: 120px;"> {{-- Tambah space bawah agar tidak ketabrak --}}
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3><i class="ti ti-shopping-cart"></i> Keranjang Belanja</h3>
+        <form method="POST" action="{{ route('keranjang.hapusTerpilih') }}" id="form-hapus-terpilih" class="d-none">
+            @csrf
+            <input type="hidden" name="ids" id="hapus-terpilih-ids">
+            <button type="submit" class="btn btn-danger btn-sm"
+                onclick="return confirm('Yakin ingin menghapus item terpilih?')">
+                <i class="ti ti-trash"></i> Hapus
+            </button>
+        </form>
+    </div>
 
     @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show">
@@ -11,68 +66,87 @@
         </div>
     @endif
 
-    @if(count($keranjang) > 0)
-        <table class="table table-bordered table-striped">
-            <thead class="table-dark">
-                <tr>
-                    <th class="text-center">Foto</th>
-                    <th class="text-center">Nama</th>
-                    <th class="text-center">Harga</th>
-                    <th class="text-center">Jumlah</th>
-                    <th class="text-center">Total</th>
-                    <th class="text-center">Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                @php $grandTotal = 0; @endphp
-                @foreach ($keranjang as $item)
-                    @php
-                        $subtotal = $item->jumlah * $item->sukuCadang->harga;
-                        $grandTotal += $subtotal;
-                    @endphp
+    @if(!empty($keranjang) && count($keranjang) > 0)
+        <form method="GET" action="{{ route('transaksiBengkel.create') }}" id="form-checkout">
+            <table class="table table-bordered table-striped">
+                <thead class="table-dark">
                     <tr>
-                        <td class="text-center">
-                            <img src="{{ $item->sukuCadang->foto }}" width="60" height="60" class="rounded">
-                        </td>
-                        <td class="text-center">{{ $item->sukuCadang->nama }}</td>
-                        <td class="text-center">Rp {{ number_format($item->sukuCadang->harga, 0, ',', '.') }}</td>
-                        <td class="text-center">
-                            <input type="number" name="jumlah"
-                                value="{{ $item->jumlah }}"
-                                min="1"
-                                class="form-control form-control-sm jumlah-input"
-                                style="width: 80px;"
-                                data-id="{{ $item->id }}"
-                                data-harga="{{ $item->sukuCadang->harga }}"
-                                data-subtotal-id="subtotal-{{ $item->id }}">
-                        </td>
-                        <td id="subtotal-{{ $item->id }}" class="text-center">
-                            Rp {{ number_format($subtotal, 0, ',', '.') }}
-                        </td>
-                        <td class="text-center">
-                            <form action="{{ route('keranjang.hapus', $item->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus item ini?')">
-                                @csrf
-                                <button class="btn btn-sm btn-danger"><i class="ti ti-trash"></i></button>
-                            </form>
-                        </td>
+                        <th class="text-center">Pilih</th>
+                        <th class="text-center">Foto</th>
+                        <th class="text-center">Nama</th>
+                        <th class="text-center">Harga</th>
+                        <th class="text-center">Jumlah</th>
+                        <th class="text-center">Total</th>
                     </tr>
-                @endforeach
-                <tr class="table-light">
-                    <td colspan="4" class="text-end fw-bold">Total</td>
-                    <td colspan="2" class="fw-bold text-success" id="grand-total">
-                        Rp {{ number_format($grandTotal, 0, ',', '.') }}
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach ($keranjang as $item)
+                        @php $subtotal = $item->jumlah * $item->sukuCadang->harga; @endphp
+                        <tr>
+                            <td class="text-center align-middle">
+                                <input type="checkbox" class="check-item" value="{{ $item->id }}">
+                                <input type="hidden" name="sukuCadangs[{{ $item->sukuCadang->id }}][id]" value="{{ $item->sukuCadang->id }}">
+                                <input type="hidden" class="selected-input" name="sukuCadangs[{{ $item->sukuCadang->id }}][selected]" value="1" disabled>
+                                <input type="hidden" name="sukuCadangs[{{ $item->sukuCadang->id }}][jumlah]" value="{{ $item->jumlah }}">
+                            </td>
+                            <td class="text-center">
+                                <img src="{{ $item->sukuCadang->foto }}" width="60" height="60" class="rounded">
+                            </td>
+                            <td class="text-center">{{ $item->sukuCadang->nama }}</td>
+                            <td class="text-center">Rp {{ number_format($item->sukuCadang->harga, 0, ',', '.') }}</td>
+                            <td class="text-center">
+                                <input type="number" value="{{ $item->jumlah }}" class="form-control form-control-sm jumlah-input text-center"
+                                    style="width: 80px;" data-id="{{ $item->id }}" data-harga="{{ $item->sukuCadang->harga }}"
+                                    data-subtotal-id="subtotal-{{ $item->id }}">
+                            </td>
+                            <td id="subtotal-{{ $item->id }}" class="text-center">
+                                Rp {{ number_format($subtotal, 0, ',', '.') }}
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </form>
     @else
         <div class="alert alert-info">Keranjang Anda kosong.</div>
     @endif
 </div>
+@endsection
+
 @section('scripts')
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function () {
+        function updateHapusTerpilih() {
+            let selectedIds = $('.check-item:checked').map(function () {
+                return $(this).val();
+            }).get();
+
+            $('#hapus-terpilih-ids').val(selectedIds.join(','));
+
+            let total = 0;
+            $('.check-item').each(function () {
+                let row = $(this).closest('tr');
+                let selectedInput = row.find('.selected-input');
+                let jumlahInput = row.find('.jumlah-input');
+                let jumlahHiddenInput = row.find('input[name$="[jumlah]"]');
+
+                if ($(this).is(':checked')) {
+                    let jumlah = parseInt(row.find('.jumlah-input').val());
+                    let harga = parseInt(row.find('.jumlah-input').data('harga'));
+                    total += jumlah * harga;
+                    selectedInput.prop('disabled', false).val(1);
+
+                    jumlahHiddenInput.val(jumlah);
+                } else {
+                    selectedInput.prop('disabled', true).val(0);
+                }
+            });
+
+            $('#grand-total').text('Rp ' + total.toLocaleString('id-ID'));
+            $('#form-hapus-terpilih').toggleClass('d-none', selectedIds.length === 0);
+            $('#btn-checkout').prop('disabled', selectedIds.length === 0);
+        }
+
         $('.jumlah-input').on('change', function () {
             let input = $(this);
             let id = input.data('id');
@@ -84,32 +158,31 @@
             $.ajax({
                 url: '/keranjang/' + id + '/update',
                 type: 'POST',
-                data: {
-                    _token: token,
-                    jumlah: jumlah
-                },
-                success: function (res) {
-                    // Hitung ulang subtotal
-                    let subtotal = jumlah * harga;
-                    subtotalEl.text('Rp ' + subtotal.toLocaleString('id-ID'));
-
-                    // Update grand total
-                    let total = 0;
-                    $('.jumlah-input').each(function () {
-                        let j = parseInt($(this).val());
-                        let h = parseInt($(this).data('harga'));
-                        total += j * h;
-                    });
-
-                    $('#grand-total').text('Rp ' + total.toLocaleString('id-ID'));
+                data: { _token: token, jumlah: jumlah },
+                success: function () {
+                    subtotalEl.text('Rp ' + (jumlah * harga).toLocaleString('id-ID'));
+                    updateHapusTerpilih();
                 },
                 error: function () {
                     alert('Gagal memperbarui jumlah.');
                 }
             });
         });
+
+        $('.check-item').on('change', updateHapusTerpilih);
+        updateHapusTerpilih();
     });
 </script>
 @endsection
-@endsection
 
+{{-- Footer tetap render setelah semua konten --}}
+<div class="checkout-footer-fixed">
+    <div class="container-fluid">
+        <div class="fw-bold mb-0 mt-2">
+            Total: <span class="text-success" id="grand-total">Rp 0</span>
+        </div>
+        <button type="submit" class="btn btn-success px-4 me-3 mt-3" id="btn-checkout" form="form-checkout" disabled>
+            <i class="ti ti-shopping-cart"></i> Checkout
+        </button>
+    </div>
+</div>

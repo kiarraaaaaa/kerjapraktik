@@ -15,6 +15,43 @@
             width: 180px; /* Ukuran lebih kecil di layar mobile */
             }
         }
+
+        .checkout-footer-fixed {
+            position: fixed;
+            bottom: 0;
+            left: 250px;
+            right: 0;
+            background: #fff;
+            border-top: 1px solid #e0e0e0;
+            z-index: 1050;
+            padding: 10px 24px;
+            height: 60px;
+            box-shadow: 0 -1px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .checkout-footer-fixed .container-fluid {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 100%;
+        }
+
+        @media (max-width: 768px) {
+            .checkout-footer-fixed {
+                left: 0;
+                padding: 10px 16px;
+            }
+
+            .checkout-footer-fixed .container-fluid {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .checkout-footer-fixed button {
+                width: 100%;
+            }
+        }
+
         .app-topstrip {
             outline: 1px solid red;
             position: fixed;
@@ -124,6 +161,7 @@
         .badge {
             font-size: 0.75rem;
         }
+
         html, body {
             height: 100%;
             margin: 0;
@@ -328,28 +366,24 @@
             </nav>
         </div>
     </aside>
-    <!--  Sidebar End -->
-    <!--  Main wrapper -->
     <div class="body-wrapper">
         <div class="body-wrapper-inner">
-                <div class="container-fluid">
-                    <div class="row">
-                        @yield('content')
-                        @yield('scripts')
-                    </div>
-                </div>
+            <div class="container-fluid">
+                @yield('content')
+            </div>
         </div>
     </div>
 </div>
-  <script src="{{ url('assets/libs/jquery/dist/jquery.min.js') }}"></script>
-  <script src="{{ url('assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js') }}"></script>
-  <script src="{{ url('assets/js/sidebarmenu.js') }}"></script>
-  <script src="{{ url('assets/js/app.min.js') }}"></script>
-  <script src="{{ url('assets/libs/apexcharts/dist/apexcharts.min.js') }}"></script>
-  <script src="{{ url('assets/libs/simplebar/dist/simplebar.js') }}"></script>
-  <script src="{{ url('assets/js/dashboard.js') }}"></script>
-  <!-- solar icons -->
-  <script src="{{ url('https://cdn.jsdelivr.net/npm/iconify-icon@1.0.8/dist/iconify-icon.min.js') }}"></script>
+    <script src="{{ url('assets/libs/jquery/dist/jquery.min.js') }}"></script>
+    <script src="{{ url('assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ url('assets/js/sidebarmenu.js') }}"></script>
+    <script src="{{ url('assets/js/app.min.js') }}"></script>
+    <script src="{{ url('assets/libs/apexcharts/dist/apexcharts.min.js') }}"></script>
+    <script src="{{ url('assets/libs/simplebar/dist/simplebar.js') }}"></script>
+    <script src="{{ url('assets/js/dashboard.js') }}"></script>
+    <!-- solar icons -->
+    <script src="{{ url('https://cdn.jsdelivr.net/npm/iconify-icon@1.0.8/dist/iconify-icon.min.js') }}"></script>
+    @yield('scripts')
 </body>
 
 </html>

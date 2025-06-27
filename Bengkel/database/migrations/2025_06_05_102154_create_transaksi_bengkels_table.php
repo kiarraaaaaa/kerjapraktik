@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignUuid('layanan_id')->constrained('layanans')->onDelete('cascade');
             $table->string('nama');
+            $table->string('alamat');
             $table->integer('total_biaya');
             $table->timestamps();
         });

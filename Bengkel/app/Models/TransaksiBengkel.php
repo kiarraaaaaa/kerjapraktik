@@ -14,7 +14,7 @@ class TransaksiBengkel extends Model
 
     protected $fillable =
     [
-        'nama','user_id', 'layanan_id', 'total_biaya'
+        'nama','alamat','user_id', 'layanan_id', 'total_biaya'
     ];
 
     public function user()

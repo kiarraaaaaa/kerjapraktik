@@ -37,6 +37,7 @@
                         <tr>
                             <th>No</th>
                             <th>Nama Costumer</th>
+                            <th>Alamat</th>
                             <th>Layanan</th>
                             <th>Suku Cadang</th>
                             <th>Total Biaya</th>
@@ -49,6 +50,7 @@
                             <tr>
                                 <td>{{ $index + 1 }}</td>
                                 <td>{{ $item['nama'] }}</td>
+                                <td>{{ $item['alamat'] }}</td>
                                 <td>{{ $item['layanan']['nama_layanan'] }}</td>
                                 <td>
                                     @if($item['sukuCadangs']->count())
