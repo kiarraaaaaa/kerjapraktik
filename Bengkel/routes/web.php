@@ -26,10 +26,11 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware('role:A')->group(function () {
     Route::delete('/pelanggan/{pelanggan}', [PelangganController::class, 'destroy'])->name('pelanggan.destroy');
+    Route::get('/pelanggan', [PelangganController::class, 'index'])->name('pelanggan.index');
+    Route::get('/pelanggan/{pelanggan}/edit', [PelangganController::class, 'edit'])->name('pelanggan.edit');
+    Route::put('/pelanggan/{pelanggan}', [PelangganController::class, 'update'])->name('pelanggan.update');
 });
-Route::get('/pelanggan', [PelangganController::class, 'index'])->name('pelanggan.index');
-Route::get('/pelanggan/{pelanggan}/edit', [PelangganController::class, 'edit'])->name('pelanggan.edit');
-Route::put('/pelanggan/{pelanggan}', [PelangganController::class, 'update'])->name('pelanggan.update');
+
 
 Route::middleware('role:A,U')->group(function () {
     Route::get('/sukuCadang', [SukuCadangController::class, 'index'])->name('sukuCadang.index');
@@ -58,11 +59,6 @@ Route::middleware('role:A,U')->group(function () {
     Route::get('/transaksiBengkel/create', [TransaksiBengkelController::class, 'create'])->name('transaksiBengkel.create');
     Route::post('/transaksiBengkel', [TransaksiBengkelController::class, 'store'])->name('transaksiBengkel.store');
     Route::get('/transaksi-bengkel/{id}', [TransaksiBengkelController::class, 'show'])->name('transaksiBengkel.show');
-});
-
-Route::middleware('role:A')->group(function () {
-    Route::get('/transaksiBengkel/{transaksiBengkel}/edit', [LayananController::class, 'edit'])->name('transaksiBengkel.edit');
-    Route::put('/transaksiBengkel/{transaksiBengkel}', [LayananController::class, 'update'])->name('transaksiBengkel.update');
 });
 
 Route::get('/keranjang', [KeranjangController::class, 'index'])->name('keranjang.index');

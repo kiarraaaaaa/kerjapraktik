@@ -24,11 +24,6 @@
             </div>
 
             <div class="mb-3">
-                <strong>Total Biaya:</strong>
-                <p>Rp{{ number_format($transaksi->total_biaya, 0, ',', '.') }}</p>
-            </div>
-
-            <div class="mb-3">
                 <strong>Suku Cadang:</strong>
                 @if ($transaksi->sukuCadangs->isEmpty())
                     <p>Tidak ada suku cadang.</p>
@@ -41,6 +36,11 @@
                         @endforeach
                     </ul>
                 @endif
+            </div>
+
+            <div class="mb-3">
+                <strong>Total Biaya:</strong>
+                <p>Rp{{ number_format($transaksi->total_biaya, 0, ',', '.') }}</p>
             </div>
 
             <div class="mt-4 d-flex justify-content-end">

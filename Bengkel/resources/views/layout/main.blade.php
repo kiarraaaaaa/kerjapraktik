@@ -251,23 +251,28 @@
             <nav class="sidebar-nav scroll-sidebar" data-simplebar="">
                 <div class="content">
                     <ul id="sidebarnav">
-                        <li class="nav-small-cap">
-                        <iconify-icon icon="solar:menu-dots-linear" class="nav-small-cap-icon fs-4"></iconify-icon>
-                        <span class="hide-menu">Home</span>
-                        </li>
-                        <li class="sidebar-item">
-                        <a class="sidebar-link primary-hover-bg" href="{{ url('dashboard') }}" aria-expanded="false">
-                            <iconify-icon icon="solar:atom-line-duotone"></iconify-icon>
-                            <span class="hide-menu">Beranda</span>
-                        </a>
-                        </li>
+                        @if (Auth::user()->role === 'A')
+                            <li class="nav-small-cap">
+                                <iconify-icon icon="solar:menu-dots-linear" class="nav-small-cap-icon fs-4"></iconify-icon>
+                                <span class="hide-menu">Home</span>
+                            </li>
+                        @endif
+                        @if (Auth::user()->role === 'A')
+                            <li class="sidebar-item">
+                                <a class="sidebar-link primary-hover-bg" href="{{ url('dashboard') }}" aria-expanded="false">
+                                    <iconify-icon icon="solar:atom-line-duotone"></iconify-icon>
+                                    <span class="hide-menu">Beranda</span>
+                                </a>
+                            </li>
+                        @endif
                         <li>
-                        <span class="sidebar-divider lg"></span>
+                            <span class="sidebar-divider lg"></span>
                         </li>
                         <li class="nav-small-cap">
-                        <iconify-icon icon="solar:menu-dots-linear" class="nav-small-cap-icon fs-4"></iconify-icon>
-                        <span class="hide-menu">Data Master</span>
+                            <iconify-icon icon="solar:menu-dots-linear" class="nav-small-cap-icon fs-4"></iconify-icon>
+                            <span class="hide-menu">Data Master</span>
                         </li>
+                        @if (Auth::user()->role === 'A')
                             <li class="sidebar-item">
                                 <a class="sidebar-link primary-hover-bg justify-content-between"
                                 href="{{ url('pelanggan') }}" aria-expanded="false">
@@ -279,6 +284,7 @@
                                     </div>
                                 </a>
                             </li>
+                        @endif
                         <li class="sidebar-item">
                             <a class="sidebar-link primary-hover-bg justify-content-between"
                             href="{{ url('sukuCadang') }}" aria-expanded="false">
@@ -315,7 +321,7 @@
                                     <span class="d-flex">
                                         <iconify-icon icon="solar:banknote-2-broken"></iconify-icon>
                                     </span>
-                                    <span class="hide-menu">Transaksi Bengkel</span>
+                                    <span class="hide-menu">Riwayat Transaksi</span>
                                 </div>
                             </a>
                         </li>

@@ -34,7 +34,7 @@ class TransaksiBengkelController extends Controller
             });
         }
 
-        $transaksi = $query->paginate(10);
+        $transaksi = $query->paginate(100);
 
         return view('transaksiBengkel.index', compact('transaksi'));
     }
@@ -71,7 +71,7 @@ class TransaksiBengkelController extends Controller
         $validated = $request->validate([
             'nama' => 'required|string|max:100',
             'alamat' => 'required|string|max:100',
-            'layanan_id' => 'required|exists:layanans,id',
+            'layanan_id' => 'nullable|exists:layanans,id',
             'sukuCadangs' => 'nullable|array',
             'sukuCadangs.*.selected' => 'nullable|in:1',
             'sukuCadangs.*.id' => 'required_with:sukuCadangs.*.selected|exists:suku_cadangs,id',
@@ -159,88 +159,16 @@ class TransaksiBengkelController extends Controller
 
     public function edit($id)
     {
-        $transaksi = TransaksiBengkel::with('sukuCadangs')->findOrFail($id);
-        $sukuCadangs = SukuCadang::all();
-        $layanan = Layanan::all();
-
-        return view('transaksiBengkel.edit', compact('transaksi', 'sukuCadangs', 'layanan'));
+        //
     }
 
     public function update(Request $request, $id)
     {
-        $validated = $request->validate([
-            'nama' => 'required|string|max:100',
-            'layanan_id' => 'required|exists:layanans,id',
-            'sukuCadangs' => 'nullable|array',
-            'sukuCadangs.*.id' => 'required_with:sukuCadangs|exists:suku_cadangs,id',
-            'sukuCadangs.*.jumlah' => 'required_with:sukuCadangs|integer|min:1',
-        ]);
-
-        DB::beginTransaction();
-
-        try {
-            $layanan = Layanan::findOrFail($validated['layanan_id']);
-            $totalBiaya = $layanan->biaya;
-
-            $transaksi = TransaksiBengkel::findOrFail($id);
-
-            // Pulihkan stok sebelum update
-            foreach ($transaksi->sukuCadangs as $sc) {
-                $sc->increment('stok', $sc->pivot->jumlah);
-            }
-
-            $transaksi->sukuCadangs()->detach();
-
-            $transaksi->update([
-                'nama' => $validated['nama'],
-                'layanan_id' => $validated['layanan_id'],
-                'total_biaya' => 0,
-            ]);
-
-            if (!empty($validated['sukuCadangs'])) {
-                foreach ($validated['sukuCadangs'] as $sc) {
-                    $sukuCadang = SukuCadang::findOrFail($sc['id']);
-                    $jumlah = $sc['jumlah'];
-                    $subtotal = $sukuCadang->harga * $jumlah;
-
-                    $transaksi->sukuCadangs()->attach($sukuCadang->id, [
-                        'jumlah' => $jumlah,
-                        'subtotal' => $subtotal,
-                    ]);
-
-                    $sukuCadang->decrement('stok', $jumlah);
-                    $totalBiaya += $subtotal;
-                }
-            }
-
-            $transaksi->update(['total_biaya' => $totalBiaya]);
-
-            DB::commit();
-
-            return redirect()->route('transaksiBengkel.index')->with('success', 'Transaksi berhasil diperbarui.');
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return back()->withErrors('Gagal memperbarui transaksi: ' . $e->getMessage())->withInput();
-        }
+        //
     }
 
     public function destroy(TransaksiBengkel $transaksiBengkel)
     {
-        DB::beginTransaction();
-
-        try {
-            foreach ($transaksiBengkel->sukuCadangs as $sc) {
-                $sc->increment('stok', $sc->pivot->jumlah);
-            }
-
-            $transaksiBengkel->delete();
-
-            DB::commit();
-
-            return redirect()->route('transaksiBengkel.index')->with('success', 'Transaksi berhasil dihapus.');
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return back()->withErrors('Gagal menghapus transaksi: ' . $e->getMessage());
-        }
+        //
     }
 }

@@ -18,9 +18,11 @@
             <h4 class="card-title mb-4">Daftar Transaksi</h4>
 
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <a href="{{ route('transaksiBengkel.create') }}" class="btn btn-primary">
-                    <i class="ti ti-credit-card"></i> Tambah Transaksi
-                </a>
+                @if (Auth::user()->role === 'A')
+                    <a href="{{ route('transaksiBengkel.create') }}" class="btn btn-primary">
+                        <i class="ti ti-credit-card"></i> Tambah Transaksi
+                    </a>
+                @endif
 
                 <form action="{{ route('transaksiBengkel.index') }}" method="GET" class="d-flex" role="search">
                     <input type="text" name="search" class="form-control me-2"
@@ -66,12 +68,6 @@
                                 <td>Rp {{ number_format($item['total_biaya'], 0, ',', '.') }}</td>
                                 <td>{{ $item['created_at']->format('d-m-Y') }}</td>
                                 <td>
-                                    @if (Auth::user()->role === 'A')
-                                        <a href="{{ route('transaksiBengkel.edit', $item['id']) }}"
-                                            class="btn btn-sm btn-warning">
-                                            <i class="ti ti-pencil"></i>
-                                        </a>
-                                    @endif
                                     <a href="{{ route('transaksiBengkel.show', $item->id) }}" class="btn btn-info btn-sm">
                                         <i class="ti ti-eye"></i>
                                     </a>

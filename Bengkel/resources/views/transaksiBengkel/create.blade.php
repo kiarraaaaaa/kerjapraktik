@@ -30,7 +30,7 @@
                     <div class="col-md-6">
                         <label for="layanan_id" class="form-label">Layanan</label>
                         <select id="layanan_id" name="layanan_id"
-                            class="form-control text-dark @error('layanan_id') is-invalid @enderror" required>
+                            class="form-control text-dark @error('layanan_id') is-invalid @enderror">
                             <option value="">-- Pilih Layanan --</option>
                             @foreach($layanan as $item)
                                 <option value="{{ $item->id }}"
