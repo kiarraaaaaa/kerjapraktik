@@ -68,12 +68,6 @@
                                         <a href="{{ route('sukuCadang.edit', $item->id) }}" class="btn btn-warning btn-sm w-100 mb-1">
                                             <i class="ti ti-pencil"></i> Edit
                                         </a>
-                                        <a href="{{ route('transaksiBengkel.create', ['sukuCadang_id' => $item->id]) }}" class="btn btn-success btn-sm w-100 mb-1">
-                                            <i class="ti ti-shopping-cart"></i> Pesan
-                                        </a>
-                                        <a href="{{ route('keranjang.tambah', ['sukuCadang_id' => $item->id]) }}" class="btn btn-outline-secondary btn-sm w-100">
-                                            <i class="ti ti-basket"></i> Tambah ke Keranjang
-                                        </a>
                                     @else
                                         @if ($item['stok'] > 0)
                                             <a href="{{ route('transaksiBengkel.create', [
