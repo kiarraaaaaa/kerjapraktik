@@ -59,55 +59,8 @@
                 {{-- SUKU CADANG --}}
                 <div class="mt-4">
                     <label class="fw-bold mb-3">Suku Cadang (Opsional)</label>
-                    @php
-                        $urlSelectedId = request()->get('sukuCadang_id');
-                        $urlSukuCadangs = request()->get('sukuCadangs', []);
-                    @endphp
-
-                    @foreach($sukuCadangs as $index => $item)
-                        @php
-                            $itemId = $item->id;
-
-                            // Check dari input sebelumnya (misal saat form error)
-                            $fromOld = old("sukuCadangs.{$index}.selected");
-
-                            // Check dari parameter sukuCadang_id (pesan langsung)
-                            $fromUrlSingle = ($urlSelectedId == $itemId);
-
-                            // Check dari parameter sukuCadangs (checkout keranjang)
-                            $fromUrlMulti = array_key_exists($itemId, $urlSukuCadangs) && isset($urlSukuCadangs[$itemId]['selected']);
-
-                            // Final check aktif jika salah satu true
-                            $isChecked = $fromOld || $fromUrlSingle || $fromUrlMulti;
-
-                            // Ambil jumlah dari old input, atau dari parameter URL jika ada
-                            $jumlah = old("sukuCadangs.{$index}.jumlah")
-                                ?? ($fromUrlMulti ? $urlSukuCadangs[$itemId]['jumlah'] : ($fromUrlSingle ? 1 : ''));
-                        @endphp
-
-                        <div class="d-flex align-items-center mb-2">
-                            <input type="checkbox" class="form-check-input me-2 suku-cadang-check"
-                                id="sc{{ $index }}"
-                                name="sukuCadangs[{{ $index }}][selected]"
-                                value="1"
-                                {{ $isChecked ? 'checked' : '' }}>
-
-                            <label for="sc{{ $index }}" class="me-2">
-                                {{ $item->nama }} (Rp{{ number_format($item->harga, 0, ',', '.') }})
-                            </label>
-
-                            {{-- ID --}}
-                            <input type="hidden" name="sukuCadangs[{{ $index }}][id]" value="{{ $itemId }}">
-
-                            {{-- Jumlah --}}
-                            <input type="number"
-                                name="sukuCadangs[{{ $index }}][jumlah]"
-                                class="form-control w-25 jumlah-input"
-                                min="1" placeholder="Jumlah"
-                                value="{{ $jumlah }}"
-                                {{ $isChecked ? '' : 'disabled' }}>
-                        </div>
-                    @endforeach
+                    <div id="sukuCadangContainer"></div>
+                    <button type="button" class="btn btn-secondary btn-sm mt-2" onclick="tambahSukuCadang()">Tambah Suku Cadang</button>
                 </div>
 
                 {{-- SUBMIT --}}
@@ -115,26 +68,77 @@
                     <button type="submit" class="btn btn-primary hstack gap-2">
                         <i class="ti ti-send fs-5"></i> Submit
                     </button>
-                    <a href="{{ route('transaksiBengkel.index') }}" class="btn btn-light ms-2">Cancel</a>
+                    <a href="{{ url()->previous() }}" class="btn btn-light ms-2">Cancel</a>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
-{{-- JS Enable/Disable Jumlah --}}
+{{-- SCRIPT --}}
 <script>
-    document.querySelectorAll('.suku-cadang-check').forEach(function(checkbox) {
-        checkbox.addEventListener('change', function() {
-            const index = this.id.replace('sc', '');
-            const jumlahInput = document.querySelector(`input[name="sukuCadangs[${index}][jumlah]"]`);
-            if (this.checked) {
-                jumlahInput.disabled = false;
-            } else {
-                jumlahInput.disabled = true;
-                jumlahInput.value = '';
-            }
-        });
+    const sukuCadangList = @json($sukuCadangs);
+    const preselected = @json($selectedSukuCadangs);
+
+    document.addEventListener('DOMContentLoaded', function () {
+        if (preselected.length > 0) {
+            preselected.forEach(item => {
+                tambahSukuCadangWithValue(item.id, item.jumlah);
+            });
+        }
     });
+
+    function tambahSukuCadangWithValue(selectedId = '', jumlahVal = '') {
+        const container = document.getElementById('sukuCadangContainer');
+        const index = container.children.length;
+
+        const row = document.createElement('div');
+        row.className = 'd-flex align-items-center gap-2 mb-2';
+
+        // Select suku cadang
+        const select = document.createElement('select');
+        select.name = `sukuCadangs[${index}][id]`;
+        select.className = 'form-select w-50';
+        select.required = true;
+
+        const defaultOption = document.createElement('option');
+        defaultOption.value = '';
+        defaultOption.text = '-- Pilih Suku Cadang --';
+        select.appendChild(defaultOption);
+
+        sukuCadangList.forEach(item => {
+            const option = document.createElement('option');
+            option.value = item.id;
+            option.text = `${item.nama} (Rp${item.harga.toLocaleString()})`;
+            if (item.id == selectedId) option.selected = true;
+            select.appendChild(option);
+        });
+
+        // Input jumlah
+        const jumlah = document.createElement('input');
+        jumlah.type = 'number';
+        jumlah.name = `sukuCadangs[${index}][jumlah]`;
+        jumlah.className = 'form-control w-25';
+        jumlah.placeholder = 'Jumlah';
+        jumlah.min = 1;
+        jumlah.required = true;
+        jumlah.value = jumlahVal || '';
+
+        // Tombol hapus baris
+        const btnHapus = document.createElement('button');
+        btnHapus.type = 'button';
+        btnHapus.className = 'btn btn-danger btn-sm';
+        btnHapus.innerText = 'Hapus';
+        btnHapus.onclick = () => row.remove();
+
+        row.appendChild(select);
+        row.appendChild(jumlah);
+        row.appendChild(btnHapus);
+        container.appendChild(row);
+    }
+
+    function tambahSukuCadang() {
+        tambahSukuCadangWithValue();
+    }
 </script>
 @endsection

@@ -53,7 +53,13 @@
                                 <td>{{ $index + 1 }}</td>
                                 <td>{{ $item['nama'] }}</td>
                                 <td>{{ $item['alamat'] }}</td>
-                                <td>{{ $item['layanan']['nama_layanan'] }}</td>
+                                <td>
+                                    @if($item['layanan'])
+                                        {{ $item['layanan']['nama_layanan'] }}
+                                    @else
+                                        <span class="text-muted">Tidak Ada</span>
+                                    @endif
+                                </td>
                                 <td>
                                     @if($item['sukuCadangs']->count())
                                         <ul>
@@ -62,7 +68,7 @@
                                             @endforeach
                                         </ul>
                                     @else
-                                        -
+                                        <span class="text-muted">Tidak Ada</span>
                                     @endif
                                 </td>
                                 <td>Rp {{ number_format($item['total_biaya'], 0, ',', '.') }}</td>

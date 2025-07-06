@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('transaksi_bengkels', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignUuid('layanan_id')->constrained('layanans')->onDelete('cascade');
+            $table->foreignUuid('layanan_id')->nullable()->constrained('layanans')->onDelete('cascade');
             $table->string('nama');
             $table->string('alamat');
             $table->integer('total_biaya');

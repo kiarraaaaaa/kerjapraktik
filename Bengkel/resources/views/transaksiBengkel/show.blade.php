@@ -20,7 +20,12 @@
 
             <div class="mb-3">
                 <strong>Layanan:</strong>
-                <p>{{ $transaksi->layanan->nama_layanan }} - Rp{{ number_format($transaksi->layanan->biaya, 0, ',', '.') }}</p>
+                <p>
+                    {{ optional($transaksi->layanan)->nama_layanan ?? 'Tidak ada layanan' }}
+                    @if ($transaksi->layanan)
+                        - Rp{{ number_format($transaksi->layanan->biaya, 0, ',', '.') }}
+                    @endif
+                </p>
             </div>
 
             <div class="mb-3">

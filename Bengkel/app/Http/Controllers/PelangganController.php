@@ -68,7 +68,7 @@ class PelangganController extends Controller
         ]);
 
         $pelanggan->update($val);
-        return redirect()->route('pelanggan.index')->with('success', 'Data ' . $val['name'] . ' berhasil diperbarui');
+        return redirect()->route('sukuCadang.index')->with('success', 'Data ' . $val['name'] . ' berhasil diperbarui');
     }
 
     public function destroy(User $pelanggan)

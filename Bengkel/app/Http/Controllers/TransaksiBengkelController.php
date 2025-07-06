@@ -47,11 +47,12 @@ class TransaksiBengkelController extends Controller
 
         // Ambil data suku cadang terpilih dari request
         $selectedSukuCadangs = [];
+
         if ($request->has('sukuCadangs')) {
             foreach ($request->input('sukuCadangs') as $sc) {
-                if (isset($sc['selected']) && isset($sc['id'])) {
-                    $selectedSukuCadangs[$sc['id']] = [
-                        'selected' => true,
+                if (isset($sc['id'])) {
+                    $selectedSukuCadangs[] = [
+                        'id' => $sc['id'],
                         'jumlah' => $sc['jumlah'] ?? 1,
                     ];
                 }
@@ -73,40 +74,52 @@ class TransaksiBengkelController extends Controller
             'alamat' => 'required|string|max:100',
             'layanan_id' => 'nullable|exists:layanans,id',
             'sukuCadangs' => 'nullable|array',
-            'sukuCadangs.*.selected' => 'nullable|in:1',
-            'sukuCadangs.*.id' => 'required_with:sukuCadangs.*.selected|exists:suku_cadangs,id',
-            'sukuCadangs.*.jumlah' => 'required_with:sukuCadangs.*.selected|integer|min:1',
+            'sukuCadangs.*.id' => 'required|distinct|exists:suku_cadangs,id',
+            'sukuCadangs.*.jumlah' => 'required|integer|min:1',
         ]);
 
         DB::beginTransaction();
 
         try {
-            $layanan = Layanan::findOrFail($validated['layanan_id']);
-            $totalBiaya = $layanan->biaya;
+            $totalBiaya = 0;
 
+            // Ambil data layanan jika ada
+            $layanan = null;
+            if (!empty($validated['layanan_id'])) {
+                $layanan = Layanan::findOrFail($validated['layanan_id']);
+                $totalBiaya += $layanan->biaya;
+            }
+
+            // Buat transaksi (total biaya nanti diupdate)
             $transaksi = TransaksiBengkel::create([
                 'nama' => $validated['nama'],
                 'alamat' => $validated['alamat'],
-                'layanan_id' => $validated['layanan_id'],
+                'layanan_id' => $layanan?->id,
                 'total_biaya' => 0,
                 'user_id' => Auth::id(),
             ]);
 
             $stokKurang = [];
+            $sukuCadangMap = [];
 
+            // Cek stok jika suku cadang ada
             if (!empty($validated['sukuCadangs'])) {
                 foreach ($validated['sukuCadangs'] as $sc) {
-                    if (isset($sc['selected'])) {
-                        $sukuCadang = SukuCadang::findOrFail($sc['id']);
-                        $jumlah = $sc['jumlah'];
+                    $sukuCadang = SukuCadang::findOrFail($sc['id']);
+                    $jumlah = $sc['jumlah'];
 
-                        if ($sukuCadang->stok < $jumlah) {
-                            $stokKurang[] = "{$sukuCadang->nama} | Sisa Stok: {$sukuCadang->stok}";
-                        }
+                    if ($sukuCadang->stok < $jumlah) {
+                        $stokKurang[] = "{$sukuCadang->nama} (Stok: {$sukuCadang->stok})";
+                    } else {
+                        $sukuCadangMap[] = [
+                            'model' => $sukuCadang,
+                            'jumlah' => $jumlah,
+                        ];
                     }
                 }
             }
 
+            // Jika stok tidak cukup, rollback dan tampilkan error
             if (!empty($stokKurang)) {
                 DB::rollBack();
 
@@ -121,35 +134,36 @@ class TransaksiBengkelController extends Controller
                     ->withInput();
             }
 
-            if (!empty($validated['sukuCadangs'])) {
-                foreach ($validated['sukuCadangs'] as $sc) {
-                    if (isset($sc['selected'])) {
-                        $sukuCadang = SukuCadang::findOrFail($sc['id']);
-                        $jumlah = $sc['jumlah'];
-                        $subtotal = $sukuCadang->harga * $jumlah;
+            // Simpan suku cadang jika stok aman
+            foreach ($sukuCadangMap as $item) {
+                $sc = $item['model'];
+                $jumlah = $item['jumlah'];
+                $subtotal = $sc->harga * $jumlah;
 
-                        $transaksi->sukuCadangs()->attach($sukuCadang->id, [
-                            'jumlah' => $jumlah,
-                            'subtotal' => $subtotal,
-                        ]);
+                $transaksi->sukuCadangs()->attach($sc->id, [
+                    'jumlah' => $jumlah,
+                    'subtotal' => $subtotal,
+                ]);
 
-                        $sukuCadang->decrement('stok', $jumlah);
-                        $totalBiaya += $subtotal;
-                    }
-                }
+                $sc->decrement('stok', $jumlah);
+                $totalBiaya += $subtotal;
             }
 
+            // Update total biaya transaksi
             $transaksi->update(['total_biaya' => $totalBiaya]);
 
             DB::commit();
 
             return redirect()->route('transaksiBengkel.index')
                 ->with('success', 'Transaksi berhasil disimpan.');
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
+            report($e);
             return back()->withErrors('Gagal menyimpan transaksi: ' . $e->getMessage())->withInput();
         }
     }
+
+
 
     public function show($id)
     {

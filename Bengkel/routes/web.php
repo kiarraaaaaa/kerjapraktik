@@ -15,7 +15,7 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', [DashboardController::class, 'index'])
-    ->middleware(['auth', 'verified'])
+    ->middleware(['auth', 'verified', 'role:A'])
     ->name('dashboard');
 
 Route::middleware('auth')->group(function () {
@@ -27,10 +27,12 @@ Route::middleware('auth')->group(function () {
 Route::middleware('role:A')->group(function () {
     Route::delete('/pelanggan/{pelanggan}', [PelangganController::class, 'destroy'])->name('pelanggan.destroy');
     Route::get('/pelanggan', [PelangganController::class, 'index'])->name('pelanggan.index');
+
+});
+Route::middleware('role:A,U')->group(function () {
     Route::get('/pelanggan/{pelanggan}/edit', [PelangganController::class, 'edit'])->name('pelanggan.edit');
     Route::put('/pelanggan/{pelanggan}', [PelangganController::class, 'update'])->name('pelanggan.update');
 });
-
 
 Route::middleware('role:A,U')->group(function () {
     Route::get('/sukuCadang', [SukuCadangController::class, 'index'])->name('sukuCadang.index');

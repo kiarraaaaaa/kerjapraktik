@@ -39,9 +39,49 @@
 
         <nav id="navmenu" class="navmenu">
             <ul>
-                <li><a href="{{ url('dashboard') }}" class="active"><i class="fa fa-house navicon"></i><span>HOME</span></a></li>
-                <li><a href="{{ url('login') }}"><i class="fa fa-right-to-bracket navicon"></i><span>LOGIN</span></a></li>
-                <li><a href="{{ url('register') }}"><i class="fa fa-user-plus navicon"></i><span>REGISTER</span></a></li>
+                <li>
+                    @auth
+                        @if(Auth::user()->role == 'A')
+                            <a href="{{ route('dashboard') }}" class="active">
+                                <i class="fa fa-house navicon"></i><span>HOME</span>
+                            </a>
+                        @else
+                            <a href="{{ route('sukuCadang.index') }}" class="active">
+                                <i class="fa fa-house navicon"></i><span>HOME</span>
+                            </a>
+                        @endif
+                    @else
+                        <a href="{{ url('/') }}" class="active">
+                            <i class="fa fa-house navicon"></i><span>HOME</span>
+                        </a>
+                    @endauth
+                </li>
+                @guest
+                    <li>
+                        <a href="{{ route('login') }}">
+                            <i class="fa fa-right-to-bracket navicon"></i><span>LOGIN</span>
+                        </a>
+                    </li>
+                @else
+                    <li>
+                        <a href="{{ Auth::user()->role === 'A' ? route('dashboard') : route('sukuCadang.index') }}">
+                            <i class="fa fa-right-to-bracket navicon"></i><span>LOGIN</span>
+                        </a>
+                    </li>
+                @endguest
+                @guest
+                    <li>
+                        <a href="{{ route('register') }}">
+                            <i class="fa fa-user-plus navicon"></i><span>REGISTER</span>
+                        </a>
+                    </li>
+                @else
+                    <li>
+                        <a href="{{ Auth::user()->role === 'A' ? route('dashboard') : route('sukuCadang.index') }}">
+                            <i class="fa fa-user-plus navicon"></i><span>REGISTER</span>
+                        </a>
+                    </li>
+                @endguest
             </ul>
         </nav>
     </header>

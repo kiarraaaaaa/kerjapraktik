@@ -7,7 +7,7 @@
     .checkout-footer-fixed {
         position: fixed;
         bottom: 0;
-        left: 250px; /* Sesuaikan sidebar */
+        left: 250px;
         right: 0;
         background-color: #fff;
         border-top: 1px solid #e0e0e0;
@@ -15,7 +15,6 @@
         padding: 8px 20px;
         box-shadow: 0 -1px 6px rgba(0, 0, 0, 0.08);
     }
-
     .checkout-footer-fixed .container-fluid {
         display: flex;
         justify-content: space-between;
@@ -23,30 +22,26 @@
         flex-wrap: wrap;
         gap: 10px;
     }
-
     .checkout-footer-fixed .btn {
         padding: 6px 16px;
         font-size: 14px;
     }
-
     @media (max-width: 768px) {
         .checkout-footer-fixed {
             left: 0;
             padding: 12px 16px;
         }
-
         .checkout-footer-fixed .container-fluid {
             flex-direction: column;
             align-items: flex-start;
         }
-
         .checkout-footer-fixed .btn {
             width: 100%;
         }
     }
 </style>
 
-<div class="container py-4" style="margin-bottom: 120px;"> {{-- Tambah space bawah agar tidak ketabrak --}}
+<div class="container py-4" style="margin-bottom: 120px;">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h3><i class="ti ti-shopping-cart"></i> Keranjang Belanja</h3>
         <form method="POST" action="{{ route('keranjang.hapusTerpilih') }}" id="form-hapus-terpilih" class="d-none">
@@ -85,9 +80,10 @@
                         <tr>
                             <td class="text-center align-middle">
                                 <input type="checkbox" class="check-item" value="{{ $item->id }}">
-                                <input type="hidden" name="sukuCadangs[{{ $item->sukuCadang->id }}][id]" value="{{ $item->sukuCadang->id }}">
-                                <input type="hidden" class="selected-input" name="sukuCadangs[{{ $item->sukuCadang->id }}][selected]" value="1" disabled>
-                                <input type="hidden" name="sukuCadangs[{{ $item->sukuCadang->id }}][jumlah]" value="{{ $item->jumlah }}">
+                                <input type="hidden" name="sukuCadangs[{{ $item->sukuCadang->id }}][id]"
+                                    value="{{ $item->sukuCadang->id }}" class="input-id" disabled>
+                                <input type="hidden" name="sukuCadangs[{{ $item->sukuCadang->id }}][jumlah]"
+                                    value="{{ $item->jumlah }}" class="input-jumlah" disabled>
                             </td>
                             <td class="text-center">
                                 <img src="{{ $item->sukuCadang->foto }}" width="60" height="60" class="rounded">
@@ -126,19 +122,20 @@
             let total = 0;
             $('.check-item').each(function () {
                 let row = $(this).closest('tr');
-                let selectedInput = row.find('.selected-input');
+                let idInput = row.find('.input-id');
                 let jumlahInput = row.find('.jumlah-input');
-                let jumlahHiddenInput = row.find('input[name$="[jumlah]"]');
+                let jumlahHiddenInput = row.find('.input-jumlah');
 
                 if ($(this).is(':checked')) {
-                    let jumlah = parseInt(row.find('.jumlah-input').val());
-                    let harga = parseInt(row.find('.jumlah-input').data('harga'));
+                    let jumlah = parseInt(jumlahInput.val());
+                    let harga = parseInt(jumlahInput.data('harga'));
                     total += jumlah * harga;
-                    selectedInput.prop('disabled', false).val(1);
 
-                    jumlahHiddenInput.val(jumlah);
+                    idInput.prop('disabled', false);
+                    jumlahHiddenInput.prop('disabled', false).val(jumlah);
                 } else {
-                    selectedInput.prop('disabled', true).val(0);
+                    idInput.prop('disabled', true);
+                    jumlahHiddenInput.prop('disabled', true);
                 }
             });
 
@@ -175,7 +172,6 @@
 </script>
 @endsection
 
-{{-- Footer tetap render setelah semua konten --}}
 <div class="checkout-footer-fixed">
     <div class="container-fluid">
         <div class="fw-bold mb-0 mt-2">
