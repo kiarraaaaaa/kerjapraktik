@@ -81,8 +81,15 @@ class LayananController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Layanan $layanan)
+    public function destroy($id)
     {
-        //
+        $layanan = Layanan::findOrFail($id);
+
+        try {
+            $layanan->delete();
+            return redirect()->route('layanan.index')->with('success', 'Layanan berhasil dihapus.');
+        } catch (\Exception $e) {
+            return redirect()->route('layanan.index')->with('error', 'Gagal menghapus layanan: ' . $e->getMessage());
+        }
     }
 }

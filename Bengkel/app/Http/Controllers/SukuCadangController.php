@@ -71,8 +71,20 @@ class SukuCadangController extends Controller
         return redirect()->route('sukuCadang.index')->with('success',' Data '. $val['nama'].' berhasil diperbarui ');
     }
 
-    public function destroy(SukuCadang $sukuCadang)
+    public function destroy($id)
     {
-        //
+        // Cari data suku cadang berdasarkan ID
+        $sukuCadang = SukuCadang::findOrFail($id);
+
+        try {
+            // Hapus data dari database
+            $sukuCadang->delete();
+
+            // Redirect dengan pesan sukses
+            return redirect()->route('sukuCadang.index')->with('success', 'Suku cadang berhasil dihapus.');
+        } catch (\Exception $e) {
+            // Redirect dengan pesan error jika gagal
+            return redirect()->route('sukuCadang.index')->with('error', 'Gagal menghapus suku cadang: ' . $e->getMessage());
+        }
     }
 }

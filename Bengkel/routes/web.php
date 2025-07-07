@@ -39,6 +39,7 @@ Route::middleware('role:A,U')->group(function () {
 });
 
 Route::middleware('role:A')->group(function () {
+    Route::delete('sukuCadang/{id}', [SukuCadangController::class, 'destroy'])->name('sukuCadang.destroy');
     Route::get('/sukuCadang/create', [SukuCadangController::class, 'create'])->name('sukuCadang.create');
     Route::post('/sukuCadang', [SukuCadangController::class, 'store'])->name('sukuCadang.store');
     Route::get('/sukuCadang/{sukuCadang}/edit', [SukuCadangController::class, 'edit'])->name('sukuCadang.edit');
@@ -50,6 +51,7 @@ Route::middleware('role:A,U')->group(function () {
 });
 
 Route::middleware('role:A')->group(function () {
+    Route::delete('layanan/{id}', [LayananController::class, 'destroy'])->name('layanan.destroy');
     Route::get('/layanan/create', [LayananController::class, 'create'])->name('layanan.create');
     Route::post('/layanan', [LayananController::class, 'store'])->name('layanan.store');
     Route::get('/layanan/{layanan}/edit', [LayananController::class, 'edit'])->name('layanan.edit');

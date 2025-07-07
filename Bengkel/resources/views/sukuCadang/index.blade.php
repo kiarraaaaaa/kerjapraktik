@@ -68,6 +68,13 @@
                                         <a href="{{ route('sukuCadang.edit', $item->id) }}" class="btn btn-warning btn-sm w-100 mb-1">
                                             <i class="ti ti-pencil"></i> Edit
                                         </a>
+                                        <form action="{{ route('sukuCadang.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus item ini?')" class="d-inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-danger btn-sm w-100">
+                                                <i class="ti ti-trash"></i> Hapus
+                                            </button>
+                                        </form>
                                     @else
                                         @if ($item['stok'] > 0)
                                             <a href="{{ route('transaksiBengkel.create', [

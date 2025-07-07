@@ -73,9 +73,7 @@
                         <i class="ti ti-device-floppy fs-5"></i>
                         Submit
                     </button>
-                    <a href="{{ url('pelanggan') }}" class="btn btn-transparans ms-2">
-                        Cancel
-                    </a>
+                    <a href="{{ url()->previous() }}" class="btn btn-light ms-2">Cancel</a>
                 </div>
             </form>
         </div>

@@ -73,7 +73,6 @@ class PelangganController extends Controller
 
     public function destroy(User $pelanggan)
     {
-        $pelanggan->delete();
-        return redirect()->route('pelanggan.index')->with('success', 'Data berhasil dihapus');
+        //
     }
 }

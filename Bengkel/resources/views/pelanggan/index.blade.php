@@ -61,16 +61,6 @@
                                                     <i class="ti ti-pencil"></i> Edit
                                                 </a>
                                             @endif
-
-                                            @if (Auth::user()->role === 'A')
-                                                <form action="{{ route('pelanggan.destroy', $item['id']) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus pelanggan ini?')" style="display:inline;">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-sm btn-danger">
-                                                        <i class="ti ti-trash"></i> Hapus
-                                                    </button>
-                                                </form>
-                                            @endif
                                         </div>
                                     </td>
                                 @endif

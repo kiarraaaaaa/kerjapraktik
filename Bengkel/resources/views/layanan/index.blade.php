@@ -55,11 +55,15 @@
                                             class="btn btn-sm btn-warning">
                                             <i class="ti ti-pencil"></i> Edit
                                         </a>
+                                        <form action="{{ route('layanan.destroy', $item['id']) }}" method="POST"
+                                            onsubmit="return confirm('Yakin ingin menghapus layanan ini?')" style="display: inline-block;">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-sm btn-danger">
+                                                <i class="ti ti-trash"></i> Hapus
+                                            </button>
+                                        </form>
                                     @endif
-                                    <a href="{{ route('transaksiBengkel.create', ['layanan_id' => $item->id]) }}"
-                                    class="btn btn-success btn-sm w-10">
-                                        <i class="ti ti-shopping-cart"></i> Pesan
-                                    </a>
                                 </td>
                             </tr>
                         @empty
