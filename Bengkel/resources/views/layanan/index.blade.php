@@ -64,6 +64,11 @@
                                             </button>
                                         </form>
                                     @endif
+                                    @if (Auth::user()->role === 'U')
+                                        <a href="{{ route('transaksiBengkel.create', ['layanan_id' => $item['id']]) }}" class="btn btn-sm btn-primary">
+                                            <i class="ti ti-shopping-cart"></i> Pesan
+                                        </a>
+                                    @endif
                                 </td>
                             </tr>
                         @empty
