@@ -14,17 +14,23 @@ class TransaksiBengkel extends Model
 
     protected $fillable =
     [
-        'nama','alamat','user_id', 'layanan_id', 'total_biaya'
+        'nama',
+        'alamat',
+        'user_id',
+        'layanan_id',
+        'total_biaya'
     ];
 
     public function user()
-{
-    return $this->belongsTo(User::class);
-}
+    {
+        return $this->belongsTo(User::class);
+    }
 
     public function layanan()
     {
-        return $this->belongsTo(Layanan::class);
+        return $this->belongsToMany(Layanan::class, 'transaksi_layanans')
+            ->withPivot('jumlah', 'subtotal')
+            ->withTimestamps();
     }
 
     public function sukuCadangs()
