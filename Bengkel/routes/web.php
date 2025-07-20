@@ -75,14 +75,14 @@ Route::middleware('role:A,U')->group(function () {
 });
 
 Route::get('/keranjang', [KeranjangController::class, 'index'])->name('keranjang.index');
-    Route::post('/keranjang/tambah/{sukuCadangId}', [KeranjangController::class, 'tambah'])->name('keranjang.tambah');
-    Route::get('/keranjang/tambah/{sukuCadang_id}', [KeranjangController::class, 'tambah'])->name('keranjang.tambah');
+Route::post('/keranjang/tambah/{sukuCadangId}', [KeranjangController::class, 'tambah'])->name('keranjang.tambah');
+Route::get('/keranjang/tambah/{sukuCadang_id}', [KeranjangController::class, 'tambah'])->name('keranjang.tambah');
 
-    // Route::post('/keranjang/update/{id}', [KeranjangController::class, 'update'])->name('keranjang.update');
-    Route::post('/keranjang/{id}/update', [KeranjangController::class, 'update'])->name('keranjang.update');
-    Route::post('/keranjang/hapus-terpilih', [KeranjangController::class, 'hapusTerpilih'])->name('keranjang.hapusTerpilih');
+// Route::post('/keranjang/update/{id}', [KeranjangController::class, 'update'])->name('keranjang.update');
+Route::post('/keranjang/{id}/update', [KeranjangController::class, 'update'])->name('keranjang.update');
+Route::post('/keranjang/hapus-terpilih', [KeranjangController::class, 'hapusTerpilih'])->name('keranjang.hapusTerpilih');
 
-    Route::post('/keranjang/hapus/{id}', [KeranjangController::class, 'hapus'])->name('keranjang.hapus');
+Route::post('/keranjang/hapus/{id}', [KeranjangController::class, 'hapus'])->name('keranjang.hapus');
 
 Route::get('/laporan/penjualan-suku-cadang', [LaporanController::class, 'penjualanSukuCadang'])->name('laporan.penjualan_suku_cadang');
 Route::get('/laporan/transaksi_layanan', [LaporanController::class, 'transaksiLayanan'])->name('laporan.transaksi_layanan');

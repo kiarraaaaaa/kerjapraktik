@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Layanan;
 use App\Models\SukuCadang;
 use App\Models\TransaksiBengkel;
+use App\Models\Keranjang;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -181,6 +182,15 @@ class TransaksiBengkelController extends Controller
             $transaksi->update(['total_biaya' => $totalBiaya]);
 
             DB::commit();
+
+            // Hapus item keranjang yang sudah diproses
+            if (!empty($validated['sukuCadangs'])) {
+                foreach ($validated['sukuCadangs'] as $sc) {
+                    Keranjang::where('user_id', Auth::id())
+                        ->where('suku_cadang_id', $sc['id'])
+                        ->delete();
+                }
+            }
 
             return redirect()->route('transaksiBengkel.index')
                 ->with('success', 'Transaksi berhasil disimpan.');

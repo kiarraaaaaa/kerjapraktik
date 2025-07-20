@@ -33,48 +33,16 @@
 
                 {{-- Layanan --}}
                 <div class="mt-4">
-                    <label class="fw-bold text-dark mb-2">Layanan (Wajib Dipilih Minimal 1)</label>
-                    @foreach($layanan as $item)
-                        @php
-                            $pivot = $transaksi['layanans']->firstWhere('id', $item['id']);
-                        @endphp
-                        <div class="d-flex align-items-center mb-2">
-                            <input type="checkbox" class="form-check-input me-2 layanan-check"
-                                data-id="{{ $item['id'] }}"
-                                {{ $pivot ? 'checked' : '' }}>
-                            <label class="me-2">{{ $item['nama_layanan'] }} (Rp{{ number_format($item['biaya'], 0, ',', '.') }})</label>
-                            
-                            {{-- Input hidden id --}}
-                            <input type="hidden" name="layanans[{{ $item['id'] }}][id]" value="{{ $item['id'] }}">
-                            
-                            {{-- Input jumlah --}}
-                            <input type="number" name="layanans[{{ $item['id'] }}][jumlah]" min="1"
-                                value="{{ $pivot ? $pivot['pivot']['jumlah'] : 1 }}"
-                                class="form-control w-25 jumlah-layanan-input"
-                                {{ $pivot ? '' : 'disabled' }}>
-                        </div>
-                    @endforeach
+                    <label class="fw-bold mb-2">Layanan</label>
+                    <div id="layananContainer"></div>
+                    <button type="button" class="btn btn-secondary btn-sm mt-2" onclick="tambahLayanan()">Tambah Layanan</button>
                 </div>
 
                 {{-- Suku Cadang --}}
                 <div class="mt-4">
-                    <label class="fw-bold text-dark">Suku Cadang (Opsional)</label>
-                    @foreach($sukuCadangs as $item)
-                    @php
-                        $pivot = $transaksi['sukuCadangs']->firstWhere('id', $item['id']);
-                    @endphp
-                    <div class="d-flex align-items-center mb-2">
-                        <input type="checkbox" class="form-check-input me-2 suku-cadang-check"
-                               data-id="{{ $item['id'] }}"
-                               {{ $pivot ? 'checked' : '' }}>
-                        <label class="me-2">{{ $item['nama'] }} ( Rp.{{ number_format($item['harga'], 0, ',', '.') }} )</label>
-                        <input type="hidden" name="sukuCadangs[{{ $item['id'] }}][id]" value="{{ $item['id'] }}">
-                        <input type="number" name="sukuCadangs[{{ $item['id'] }}][jumlah]" min="1"
-                               value="{{ $pivot ? $pivot['pivot']['jumlah'] : 1 }}"
-                               class="form-control w-25 jumlah-input"
-                               {{ $pivot ? '' : 'disabled' }}>
-                    </div>
-                    @endforeach
+                    <label class="fw-bold mb-2">Suku Cadang (Opsional)</label>
+                    <div id="sukuCadangContainer"></div>
+                    <button type="button" class="btn btn-secondary btn-sm mt-2" onclick="tambahSukuCadang()">Tambah Suku Cadang</button>
                 </div>
 
                 {{-- Tombol --}}
@@ -89,34 +57,128 @@
     </div>
 </div>
 
-{{-- Script enable/disable jumlah input berdasarkan checkbox --}}
+{{-- SCRIPT --}}
 <script>
-    // Untuk Layanan
-    document.querySelectorAll('.layanan-check').forEach(function(checkbox) {
-        checkbox.addEventListener('change', function() {
-            let id = this.dataset.id;
-            let jumlahInput = document.querySelector(`input[name="layanans[${id}][jumlah]"]`);
-            if (this.checked) {
-                jumlahInput.disabled = false;
-            } else {
-                jumlahInput.disabled = true;
-                jumlahInput.value = 1;
-            }
-        });
+    const layananList = @json($layanan);
+    const sukuCadangList = @json($sukuCadangs);
+
+    const preselectedLayanan = @json($selectedLayanans ?? []);
+    const preselectedSukuCadang = @json($selectedSukuCadangs ?? []);
+
+    document.addEventListener('DOMContentLoaded', function() {
+        if (preselectedLayanan.length > 0) {
+            preselectedLayanan.forEach(item => {
+                tambahLayananWithValue(item.id, item.jumlah);
+            });
+        } else {
+            // tambahLayanan(); // default satu layanan kosong
+        }
+
+        if (preselectedSukuCadang.length > 0) {
+            preselectedSukuCadang.forEach(item => {
+                tambahSukuCadangWithValue(item.id, item.jumlah);
+            });
+        }
     });
 
-    // Untuk Suku Cadang
-    document.querySelectorAll('.suku-cadang-check').forEach(function(checkbox) {
-        checkbox.addEventListener('change', function() {
-            let id = this.dataset.id;
-            let jumlahInput = document.querySelector(`input[name="sukuCadangs[${id}][jumlah]"]`);
-            if (this.checked) {
-                jumlahInput.disabled = false;
-            } else {
-                jumlahInput.disabled = true;
-                jumlahInput.value = 1;
-            }
+    function tambahLayananWithValue(selectedId = '', jumlahVal = '') {
+        const container = document.getElementById('layananContainer');
+        const index = container.children.length;
+
+        const row = document.createElement('div');
+        row.className = 'd-flex align-items-center gap-2 mb-2';
+
+        const select = document.createElement('select');
+        select.name = `layanans[${index}][id]`;
+        select.className = 'form-select w-50';
+        select.required = true;
+
+        const defaultOption = document.createElement('option');
+        defaultOption.value = '';
+        defaultOption.text = '-- Pilih Layanan --';
+        select.appendChild(defaultOption);
+
+        layananList.forEach(item => {
+            const option = document.createElement('option');
+            option.value = item.id;
+            option.text = `${item.nama_layanan} (Rp${item.biaya.toLocaleString()})`;
+            if (item.id == selectedId) option.selected = true;
+            select.appendChild(option);
         });
-    });
+
+        const jumlah = document.createElement('input');
+        jumlah.type = 'number';
+        jumlah.name = `layanans[${index}][jumlah]`;
+        jumlah.className = 'form-control w-25';
+        jumlah.placeholder = 'Jumlah';
+        jumlah.min = 1;
+        jumlah.required = true;
+        jumlah.value = jumlahVal || '';
+
+        const btnHapus = document.createElement('button');
+        btnHapus.type = 'button';
+        btnHapus.className = 'btn btn-danger btn-sm';
+        btnHapus.innerText = 'Hapus';
+        btnHapus.onclick = () => row.remove();
+
+        row.appendChild(select);
+        row.appendChild(jumlah);
+        row.appendChild(btnHapus);
+        container.appendChild(row);
+    }
+
+    function tambahLayanan() {
+        tambahLayananWithValue();
+    }
+
+    function tambahSukuCadangWithValue(selectedId = '', jumlahVal = '') {
+        const container = document.getElementById('sukuCadangContainer');
+        const index = container.children.length;
+
+        const row = document.createElement('div');
+        row.className = 'd-flex align-items-center gap-2 mb-2';
+
+        const select = document.createElement('select');
+        select.name = `sukuCadangs[${index}][id]`;
+        select.className = 'form-select w-50';
+        select.required = true;
+
+        const defaultOption = document.createElement('option');
+        defaultOption.value = '';
+        defaultOption.text = '-- Pilih Suku Cadang --';
+        select.appendChild(defaultOption);
+
+        sukuCadangList.forEach(item => {
+            const option = document.createElement('option');
+            option.value = item.id;
+            option.text = `${item.nama} (Rp${item.harga.toLocaleString()})`;
+            if (item.id == selectedId) option.selected = true;
+            select.appendChild(option);
+        });
+
+        const jumlah = document.createElement('input');
+        jumlah.type = 'number';
+        jumlah.name = `sukuCadangs[${index}][jumlah]`;
+        jumlah.className = 'form-control w-25';
+        jumlah.placeholder = 'Jumlah';
+        jumlah.min = 1;
+        jumlah.required = true;
+        jumlah.value = jumlahVal || '';
+
+        const btnHapus = document.createElement('button');
+        btnHapus.type = 'button';
+        btnHapus.className = 'btn btn-danger btn-sm';
+        btnHapus.innerText = 'Hapus';
+        btnHapus.onclick = () => row.remove();
+
+        row.appendChild(select);
+        row.appendChild(jumlah);
+        row.appendChild(btnHapus);
+        container.appendChild(row);
+    }
+
+    function tambahSukuCadang() {
+        tambahSukuCadangWithValue();
+    }
 </script>
 @endsection
