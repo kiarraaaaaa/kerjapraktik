@@ -19,7 +19,7 @@
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="nohp" class="form-label">No Handphone</label>
-                            <input type="text" name="nohp" id="nohp"
+                            <input type="number" name="nohp" id="nohp"
                                 class="form-control @error('nohp') is-invalid @enderror" value="{{ old('nohp') }}"
                                 placeholder="Masukkan no handphone">
                             @error('nohp')

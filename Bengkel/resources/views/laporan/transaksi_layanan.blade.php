@@ -23,7 +23,17 @@
                         <tr>
                             <td class="text-center">{{ $index + 1 }}</td>
                             <td class="text-center">{{ \Carbon\Carbon::parse($item->created_at)->format('d-m-Y') }}</td>
-                            <td>{{ $item->layanan->nama_layanan }}</td>
+                            <td>
+                                @if($item->layanans->count() > 0)
+                                    <ul class="mb-0 ps-3">
+                                        @foreach($item->layanans as $sc)
+                                            <li>{{ $sc->nama_layanan }} ({{ $sc->pivot->jumlah }})</li>
+                                        @endforeach
+                                    </ul>
+                                @else
+                                    <span class="ps-3 text-muted">Tidak Ada Layanan</span>
+                                @endif
+                            </td>
                             <td>
                                 @if($item->sukuCadangs->count() > 0)
                                     <ul class="mb-0 ps-3">

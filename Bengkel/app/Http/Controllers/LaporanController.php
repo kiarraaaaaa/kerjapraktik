@@ -31,7 +31,7 @@ class LaporanController extends Controller
     // Laporan Transaksi Layanan Bengkel
     public function transaksiLayanan()
     {
-        $laporan = TransaksiBengkel::with('layanan', 'sukuCadangs')
+        $laporan = TransaksiBengkel::with('layanans', 'sukuCadangs')
             ->orderBy('created_at', 'desc')
             ->get();
 

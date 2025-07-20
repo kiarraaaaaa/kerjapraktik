@@ -326,6 +326,26 @@
                             </a>
                         </li>
                         <li>
+                            <span class="sidebar-divider lg"></span>
+                        </li>
+                        @if(auth()->user()->role !== 'A')
+                            <li class="nav-small-cap">
+                                <iconify-icon icon="solar:menu-dots-linear" class="nav-small-cap-icon fs-4"></iconify-icon>
+                                <span class="hide-menu">Bantuan</span>
+                            </li>
+                            <li class="sidebar-item">
+                                <a class="sidebar-link primary-hover-bg justify-content-between"
+                                href="https://wa.me/62895321954141" target="_blank" aria-expanded="false">
+                                    <div class="d-flex align-items-center gap-6">
+                                        <span class="d-flex">
+                                            <iconify-icon icon="ic:baseline-whatsapp"></iconify-icon>
+                                        </span>
+                                        <span class="hide-menu">Hubungi WhatsApp</span>
+                                    </div>
+                                </a>
+                            </li>
+                        @endif
+                        <li>
                         <span class="sidebar-divider lg"></span>
                         </li>
                         @if (Auth::user()->role === 'A')

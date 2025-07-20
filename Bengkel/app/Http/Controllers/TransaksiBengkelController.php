@@ -39,34 +39,6 @@ class TransaksiBengkelController extends Controller
         return view('transaksiBengkel.index', compact('transaksi'));
     }
 
-    // public function create(Request $request)
-    // {
-    //     $sukuCadangs = SukuCadang::all();
-    //     $layanan = Layanan::all();
-    //     $selectedLayanan = $request->get('layanan_id');
-
-    //     // Ambil data suku cadang terpilih dari request
-    //     $selectedSukuCadangs = [];
-
-    //     if ($request->has('sukuCadangs')) {
-    //         foreach ($request->input('sukuCadangs') as $sc) {
-    //             if (isset($sc['id'])) {
-    //                 $selectedSukuCadangs[] = [
-    //                     'id' => $sc['id'],
-    //                     'jumlah' => $sc['jumlah'] ?? 1,
-    //                 ];
-    //             }
-    //         }
-    //     }
-
-    //     return view('transaksiBengkel.create', compact(
-    //         'sukuCadangs',
-    //         'layanan',
-    //         'selectedLayanan',
-    //         'selectedSukuCadangs'
-    //     ));
-    // }
-
     public function create(Request $request)
     {
         $sukuCadangs = SukuCadang::all();
@@ -113,105 +85,6 @@ class TransaksiBengkelController extends Controller
             'selectedSukuCadangs'
         ));
     }
-
-
-
-    // public function store(Request $request)
-    // {
-    //     $validated = $request->validate([
-    //         'nama' => 'required|string|max:100',
-    //         'alamat' => 'required|string|max:100',
-    //         'layanan_id' => 'nullable|exists:layanans,id',
-    //         'sukuCadangs' => 'nullable|array',
-    //         'sukuCadangs.*.id' => 'required|distinct|exists:suku_cadangs,id',
-    //         'sukuCadangs.*.jumlah' => 'required|integer|min:1',
-    //     ]);
-
-    //     DB::beginTransaction();
-
-    //     try {
-    //         $totalBiaya = 0;
-
-    //         // Ambil data layanan jika ada
-    //         $layanan = null;
-    //         if (!empty($validated['layanan_id'])) {
-    //             $layanan = Layanan::findOrFail($validated['layanan_id']);
-    //             $totalBiaya += $layanan->biaya;
-    //         }
-
-    //         // Buat transaksi (total biaya nanti diupdate)
-    //         $transaksi = TransaksiBengkel::create([
-    //             'nama' => $validated['nama'],
-    //             'alamat' => $validated['alamat'],
-    //             'layanan_id' => $layanan?->id,
-    //             'total_biaya' => 0,
-    //             'user_id' => Auth::id(),
-    //         ]);
-
-    //         $stokKurang = [];
-    //         $sukuCadangMap = [];
-
-    //         // Cek stok jika suku cadang ada
-    //         if (!empty($validated['sukuCadangs'])) {
-    //             foreach ($validated['sukuCadangs'] as $sc) {
-    //                 $sukuCadang = SukuCadang::findOrFail($sc['id']);
-    //                 $jumlah = $sc['jumlah'];
-
-    //                 if ($sukuCadang->stok < $jumlah) {
-    //                     $stokKurang[] = "{$sukuCadang->nama} (Stok: {$sukuCadang->stok})";
-    //                 } else {
-    //                     $sukuCadangMap[] = [
-    //                         'model' => $sukuCadang,
-    //                         'jumlah' => $jumlah,
-    //                     ];
-    //                 }
-    //             }
-    //         }
-
-    //         // Jika stok tidak cukup, rollback dan tampilkan error
-    //         if (!empty($stokKurang)) {
-    //             DB::rollBack();
-
-    //             $pesan = "Beberapa suku cadang tidak mencukupi stok:<br><ul>";
-    //             foreach ($stokKurang as $item) {
-    //                 $pesan .= "<li>{$item}</li>";
-    //             }
-    //             $pesan .= "</ul>";
-
-    //             return redirect()->back()
-    //                 ->with('warning_html', $pesan)
-    //                 ->withInput();
-    //         }
-
-    //         // Simpan suku cadang jika stok aman
-    //         foreach ($sukuCadangMap as $item) {
-    //             $sc = $item['model'];
-    //             $jumlah = $item['jumlah'];
-    //             $subtotal = $sc->harga * $jumlah;
-
-    //             $transaksi->sukuCadangs()->attach($sc->id, [
-    //                 'jumlah' => $jumlah,
-    //                 'subtotal' => $subtotal,
-    //             ]);
-
-    //             $sc->decrement('stok', $jumlah);
-    //             $totalBiaya += $subtotal;
-    //         }
-
-    //         // Update total biaya transaksi
-    //         $transaksi->update(['total_biaya' => $totalBiaya]);
-
-    //         DB::commit();
-
-    //         return redirect()->route('transaksiBengkel.index')
-    //             ->with('success', 'Transaksi berhasil disimpan.');
-    //     } catch (\Throwable $e) {
-    //         DB::rollBack();
-    //         report($e);
-    //         return back()->withErrors('Gagal menyimpan transaksi: ' . $e->getMessage())->withInput();
-    //     }
-    // }
-
 
     public function store(Request $request)
     {
@@ -318,7 +191,18 @@ class TransaksiBengkelController extends Controller
         }
     }
 
+    public function updateStatus(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'status' => 'required|in:pending,in_progress,completed,cancelled',
+        ]);
 
+        $transaksi = TransaksiBengkel::findOrFail($id);
+        $transaksi->status = $validated['status'];
+        $transaksi->save();
+
+        return redirect()->back()->with('success', 'Status transaksi berhasil diperbarui.');
+    }
 
     public function show($id)
     {
@@ -328,16 +212,169 @@ class TransaksiBengkelController extends Controller
 
     public function edit($id)
     {
-        //
+        $transaksi = TransaksiBengkel::with('layanans', 'sukuCadangs')->findOrFail($id);
+        $sukuCadangs = SukuCadang::all();
+        $layanan = Layanan::all();
+
+        // Siapkan data terpilih dalam format seperti saat create
+        $selectedLayanans = $transaksi->layanans->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'jumlah' => $item->pivot->jumlah,
+            ];
+        })->toArray();
+
+        $selectedSukuCadangs = $transaksi->sukuCadangs->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'jumlah' => $item->pivot->jumlah,
+            ];
+        })->toArray();
+
+        return view('transaksiBengkel.edit', compact(
+            'transaksi',
+            'sukuCadangs',
+            'layanan',
+            'selectedLayanans',
+            'selectedSukuCadangs'
+        ));
     }
 
     public function update(Request $request, $id)
     {
-        //
+        $validated = $request->validate([
+            'nohp' => 'required|string|max:100',
+            'alamat' => 'required|string|max:100',
+            'layanans' => 'nullable|array',
+            'layanans.*.id' => 'required|distinct|exists:layanans,id',
+            'layanans.*.jumlah' => 'required|integer|min:1',
+            'sukuCadangs' => 'nullable|array',
+            'sukuCadangs.*.id' => 'required|distinct|exists:suku_cadangs,id',
+            'sukuCadangs.*.jumlah' => 'required|integer|min:1',
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            $transaksi = TransaksiBengkel::with('sukuCadangs')->findOrFail($id);
+
+            $transaksi->update([
+                'nohp' => $validated['nohp'],
+                'alamat' => $validated['alamat'],
+            ]);
+
+            // Kembalikan stok suku cadang sebelumnya
+            foreach ($transaksi->sukuCadangs as $sc) {
+                $sc->increment('stok', $sc->pivot->jumlah);
+            }
+
+            // Hapus semua relasi sebelumnya
+            $transaksi->layanans()->detach();
+            $transaksi->sukuCadangs()->detach();
+
+            $totalBiaya = 0;
+
+            // Tambah layanan baru
+            if (!empty($validated['layanans'])) {
+                foreach ($validated['layanans'] as $layananData) {
+                    $layanan = Layanan::findOrFail($layananData['id']);
+                    $jumlah = $layananData['jumlah'];
+                    $subtotal = $layanan->biaya * $jumlah;
+
+                    $transaksi->layanans()->attach($layanan->id, [
+                        'jumlah' => $jumlah,
+                        'subtotal' => $subtotal,
+                    ]);
+
+                    $totalBiaya += $subtotal;
+                }
+            }
+
+            // Tambah suku cadang baru
+            $stokKurang = [];
+            $sukuCadangMap = [];
+
+            if (!empty($validated['sukuCadangs'])) {
+                foreach ($validated['sukuCadangs'] as $sc) {
+                    $sukuCadang = SukuCadang::findOrFail($sc['id']);
+                    $jumlah = $sc['jumlah'];
+
+                    if ($sukuCadang->stok < $jumlah) {
+                        $stokKurang[] = "{$sukuCadang->nama} (Stok: {$sukuCadang->stok})";
+                    } else {
+                        $sukuCadangMap[] = [
+                            'model' => $sukuCadang,
+                            'jumlah' => $jumlah,
+                        ];
+                    }
+                }
+
+                if (!empty($stokKurang)) {
+                    DB::rollBack();
+
+                    $pesan = "Beberapa suku cadang tidak mencukupi stok:<br><ul>";
+                    foreach ($stokKurang as $item) {
+                        $pesan .= "<li>{$item}</li>";
+                    }
+                    $pesan .= "</ul>";
+
+                    return redirect()->back()
+                        ->with('warning_html', $pesan)
+                        ->withInput();
+                }
+
+                foreach ($sukuCadangMap as $item) {
+                    $sc = $item['model'];
+                    $jumlah = $item['jumlah'];
+                    $subtotal = $sc->harga * $jumlah;
+
+                    $transaksi->sukuCadangs()->attach($sc->id, [
+                        'jumlah' => $jumlah,
+                        'subtotal' => $subtotal,
+                    ]);
+
+                    $sc->decrement('stok', $jumlah);
+                    $totalBiaya += $subtotal;
+                }
+            }
+
+            $transaksi->update(['total_biaya' => $totalBiaya]);
+
+            DB::commit();
+
+            return redirect()->route('transaksiBengkel.index')
+                ->with('success', 'Transaksi berhasil diperbarui.');
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            report($e);
+            return back()->withErrors('Gagal memperbarui transaksi: ' . $e->getMessage())->withInput();
+        }
     }
 
-    public function destroy(TransaksiBengkel $transaksiBengkel)
+    public function destroy($id)
     {
-        //
+        $transaksiBengkel = TransaksiBengkel::findOrFail($id);
+        
+        DB::beginTransaction();
+
+        try {
+            foreach ($transaksiBengkel->sukuCadangs as $sc) {
+                $sc->increment('stok', $sc->pivot->jumlah);
+            }
+
+            $transaksiBengkel->layanans()->detach();
+            $transaksiBengkel->sukuCadangs()->detach();
+
+            $transaksiBengkel->delete();
+
+            DB::commit();
+
+            return redirect()->route('transaksiBengkel.index')
+                ->with('success', 'Transaksi berhasil dihapus.');
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            report($e);
+            return back()->withErrors('Gagal menghapus transaksi: ' . $e->getMessage());
+        }
     }
 }

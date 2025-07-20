@@ -44,6 +44,9 @@
                                 <th>Suku Cadang</th>
                                 <th>Total Biaya</th>
                                 <th>Tanggal</th>
+                                @if(auth()->user()->role !== 'U')
+                                    <th>Status</th>
+                                @endif
                                 <th>Aksi</th>
                             </tr>
                         </thead>
@@ -64,8 +67,6 @@
                                             <span class="text-muted">Tidak Ada</span>
                                         @endif
                                     </td>
-
-
                                     <td>
                                         @if ($item['sukuCadangs']->count())
                                             <ul>
@@ -79,12 +80,47 @@
                                     </td>
                                     <td>Rp {{ number_format($item['total_biaya'], 0, ',', '.') }}</td>
                                     <td>{{ $item['created_at']->format('d-m-Y') }}</td>
-                                    <td>
+                                    @if(auth()->user()->role !== 'U')
+                                        <td>
+                                            @if ($item->status === 'completed')
+                                                <select class="form-select form-select-sm" disabled>
+                                                    @foreach (['pending' => 'Pending', 'in_progress' => 'Sedang Dikerjakan', 'completed' => 'Selesai', 'cancelled' => 'Dibatalkan'] as $key => $label)
+                                                        <option value="{{ $key }}" {{ $item->status === $key ? 'selected' : '' }}>{{ $label }}</option>
+                                                    @endforeach
+                                                </select>
+                                            @else
+                                                <form action="{{ route('transaksiBengkel.updateStatus', $item->id) }}" method="POST" onsubmit="return handleStatusChange(this)">
+                                                    @csrf
+                                                    @method('PATCH')
+                                                    <select name="status" class="form-select form-select-sm" onchange="handleStatusChange(this)">
+                                                        @foreach (['pending' => 'Pending', 'in_progress' => 'Sedang Dikerjakan', 'completed' => 'Selesai', 'cancelled' => 'Dibatalkan'] as $key => $label)
+                                                            <option value="{{ $key }}" {{ $item->status === $key ? 'selected' : '' }}>
+                                                                {{ $label }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </form>
+                                            @endif
+                                        </td>
+                                    @endif
+                                    <td class="d-flex gap-1 justify-content-center">
                                         <a href="{{ route('transaksiBengkel.show', $item->id) }}"
-                                            class="btn btn-info btn-sm">
-                                            <i class="ti ti-eye"></i>
-                                        </a>
-                                    </td>
+                                            class="btn btn-info btn-sm" title="Lihat"><i class="ti ti-eye"></i></a>
+                                    
+                                        @if ($item->status !== 'completed')
+                                            <a href="{{ route('transaksiBengkel.edit', $item->id) }}"
+                                                class="btn btn-warning btn-sm" title="Edit"><i class="ti ti-pencil"></i></a>
+                                    
+                                            <form action="{{ route('transaksiBengkel.destroy', $item->id) }}" method="POST"
+                                                onsubmit="return confirm('Yakin ingin menghapus transaksi ini?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-danger btn-sm" title="Hapus">
+                                                    <i class="ti ti-trash"></i>
+                                                </button>
+                                            </form>
+                                        @endif
+                                    </td>                                    
                                 </tr>
                             @empty
                                 <tr>
@@ -101,4 +137,28 @@
         </div>
 
     </div>
+
+    <script>
+        function handleStatusChange(selectElement) {
+            const form = selectElement.closest('form');
+            const selectedValue = selectElement.value;
+    
+            if (selectedValue === 'completed') {
+                if (!confirm('Status akan diubah menjadi SELESAI. Setelah itu, data tidak dapat diedit, dihapus, atau diubah statusnya lagi. Lanjutkan?')) {
+                    // Reset ke value sebelumnya jika dibatalkan
+                    selectElement.value = selectElement.getAttribute('data-current');
+                    return;
+                }
+            }
+    
+            form.submit();
+        }
+    
+        // Simpan nilai awal sebagai data-current agar bisa di-rollback kalau user batal
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('select[name="status"]').forEach(function (el) {
+                el.setAttribute('data-current', el.value);
+            });
+        });
+    </script>    
 @endsection

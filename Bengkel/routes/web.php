@@ -58,11 +58,20 @@ Route::middleware('role:A')->group(function () {
     Route::put('/layanan/{layanan}', [LayananController::class, 'update'])->name('layanan.update');
 });
 
+Route::middleware('role:A')->group(function () {
+    Route::patch('/transaksi-bengkel/{id}/status', [TransaksiBengkelController::class, 'updateStatus'])->name('transaksiBengkel.updateStatus');
+});
+
 Route::middleware('role:A,U')->group(function () {
     Route::get('/transaksiBengkel', [TransaksiBengkelController::class, 'index'])->name('transaksiBengkel.index');
     Route::get('/transaksiBengkel/create', [TransaksiBengkelController::class, 'create'])->name('transaksiBengkel.create');
     Route::post('/transaksiBengkel', [TransaksiBengkelController::class, 'store'])->name('transaksiBengkel.store');
     Route::get('/transaksi-bengkel/{id}', [TransaksiBengkelController::class, 'show'])->name('transaksiBengkel.show');
+
+    // ✅ Tambahkan dua baris di bawah ini:
+    Route::get('/transaksiBengkel/{id}/edit', [TransaksiBengkelController::class, 'edit'])->name('transaksiBengkel.edit');
+    Route::put('/transaksiBengkel/{id}', [TransaksiBengkelController::class, 'update'])->name('transaksiBengkel.update');
+    Route::delete('/transaksiBengkel/{id}', [TransaksiBengkelController::class, 'destroy'])->name('transaksiBengkel.destroy');
 });
 
 Route::get('/keranjang', [KeranjangController::class, 'index'])->name('keranjang.index');

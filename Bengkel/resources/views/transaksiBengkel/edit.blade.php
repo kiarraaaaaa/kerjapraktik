@@ -13,24 +13,47 @@
                 {{-- Pelanggan & Layanan --}}
                 <div class="row mb-3">
                     <div class="col-md-6">
-                        <label for="nama" class="form-label">Nama Pembeli</label>
-                        <input type="text" name="nama" id="nama" class="form-control @error('nama') is-invalid @enderror text-dark"
-                            value="{{ old('nama') ? old('nama'): $transaksi['nama'] }}" placeholder="Masukan Nama Pembeli">
-                        @error('nama')
+                        <label for="nohp" class="form-label">No. HP</label>
+                        <input type="number" name="nohp" id="nohp" class="form-control @error('nohp') is-invalid @enderror text-dark"
+                            value="{{ old('nohp') ? old('nohp'): $transaksi['nohp'] }}" placeholder="Masukan Nomor Handphone">
+                        @error('nohp')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
-                    </div>
+                    </div>        
+                </div>
 
-                    <div class="col-md-6">
-                        <label for="layanan_id">Layanan</label>
-                        <select id="layanan_id" name="layanan_id" class="form-control text-dark mt-2" required>
-                            @foreach($layanan as $item)
-                                <option value="{{ $item['id'] }}" {{ $item['id'] == $transaksi['layanan_id'] ? 'selected' : '' }}>
-                                    {{ $item['nama_layanan'] }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
+                <div class="col-md-6">
+                    <label for="alamat" class="form-label">Alamat</label>
+                    <input type="text" name="alamat" id="alamat" class="form-control @error('alamat') is-invalid @enderror text-dark"
+                        value="{{ old('alamat') ? old('alamat'): $transaksi['alamat'] }}" placeholder="Masukan Alamat">
+                    @error('alamat')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                {{-- Layanan --}}
+                <div class="mt-4">
+                    <label class="fw-bold text-dark mb-2">Layanan (Wajib Dipilih Minimal 1)</label>
+                    @foreach($layanan as $item)
+                        @php
+                            $pivot = $transaksi['layanans']->firstWhere('id', $item['id']);
+                        @endphp
+                        <div class="d-flex align-items-center mb-2">
+                            <input type="checkbox" class="form-check-input me-2 layanan-check"
+                                data-id="{{ $item['id'] }}"
+                                {{ $pivot ? 'checked' : '' }}>
+                            <label class="me-2">{{ $item['nama_layanan'] }} (Rp{{ number_format($item['biaya'], 0, ',', '.') }})</label>
+                            
+                            {{-- Input hidden id --}}
+                            <input type="hidden" name="layanans[{{ $item['id'] }}][id]" value="{{ $item['id'] }}">
+                            
+                            {{-- Input jumlah --}}
+                            <input type="number" name="layanans[{{ $item['id'] }}][jumlah]" min="1"
+                                value="{{ $pivot ? $pivot['pivot']['jumlah'] : 1 }}"
+                                class="form-control w-25 jumlah-layanan-input"
+                                {{ $pivot ? '' : 'disabled' }}>
+                        </div>
+                    @endforeach
                 </div>
 
                 {{-- Suku Cadang --}}
@@ -44,7 +67,7 @@
                         <input type="checkbox" class="form-check-input me-2 suku-cadang-check"
                                data-id="{{ $item['id'] }}"
                                {{ $pivot ? 'checked' : '' }}>
-                        <label class="me-2">{{ $item['nama'] }} (Rp{{ number_format($item['harga'], 0, ',', '.') }})</label>
+                        <label class="me-2">{{ $item['nama'] }} ( Rp.{{ number_format($item['harga'], 0, ',', '.') }} )</label>
                         <input type="hidden" name="sukuCadangs[{{ $item['id'] }}][id]" value="{{ $item['id'] }}">
                         <input type="number" name="sukuCadangs[{{ $item['id'] }}][jumlah]" min="1"
                                value="{{ $pivot ? $pivot['pivot']['jumlah'] : 1 }}"
@@ -53,6 +76,7 @@
                     </div>
                     @endforeach
                 </div>
+
                 {{-- Tombol --}}
                 <div class="d-flex justify-content-end mt-4">
                     <button type="submit" class="btn btn-primary">
@@ -65,8 +89,23 @@
     </div>
 </div>
 
-{{-- Script enable/disable jumlah --}}
+{{-- Script enable/disable jumlah input berdasarkan checkbox --}}
 <script>
+    // Untuk Layanan
+    document.querySelectorAll('.layanan-check').forEach(function(checkbox) {
+        checkbox.addEventListener('change', function() {
+            let id = this.dataset.id;
+            let jumlahInput = document.querySelector(`input[name="layanans[${id}][jumlah]"]`);
+            if (this.checked) {
+                jumlahInput.disabled = false;
+            } else {
+                jumlahInput.disabled = true;
+                jumlahInput.value = 1;
+            }
+        });
+    });
+
+    // Untuk Suku Cadang
     document.querySelectorAll('.suku-cadang-check').forEach(function(checkbox) {
         checkbox.addEventListener('change', function() {
             let id = this.dataset.id;
