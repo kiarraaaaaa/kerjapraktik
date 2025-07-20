@@ -14,11 +14,11 @@ class TransaksiBengkel extends Model
 
     protected $fillable =
     [
-        'nama',
-        'alamat',
         'user_id',
-        'layanan_id',
-        'total_biaya'
+        'alamat',
+        'nohp',
+        'total_biaya',
+        'status'
     ];
 
     public function user()
@@ -26,7 +26,7 @@ class TransaksiBengkel extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function layanan()
+    public function layanans()
     {
         return $this->belongsToMany(Layanan::class, 'transaksi_layanans')
             ->withPivot('jumlah', 'subtotal')

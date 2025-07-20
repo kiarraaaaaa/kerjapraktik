@@ -11,12 +11,6 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (Schema::hasColumn('transaksi_bengkels', 'name')) {
-            Schema::table('transaksi_bengkels', function (Blueprint $table) {
-                $table->dropColumn('name');
-            });
-        }
-
         Schema::table('transaksi_bengkels', function (Blueprint $table) {
             $table->string('nohp')->after('alamat')->nullable();
         });
@@ -28,14 +22,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        if (Schema::hasColumn('transaksi_bengkels', 'nohp')) {
-            Schema::table('transaksi_bengkels', function (Blueprint $table) {
-                $table->dropColumn('nohp');
-            });
-        }
-
         Schema::table('transaksi_bengkels', function (Blueprint $table) {
-            $table->string('name')->after('alamat')->nullable();
+            $table->dropColumn('nohp');
         });
     }
 };
