@@ -20,8 +20,10 @@
                         <div class="col-md-6">
                             <label for="nohp" class="form-label">No Handphone</label>
                             <input type="number" name="nohp" id="nohp"
-                                class="form-control @error('nohp') is-invalid @enderror" value="{{ old('nohp') }}"
-                                placeholder="Masukkan no handphone">
+    class="form-control @error('nohp') is-invalid @enderror"
+    value="{{ auth()->user()->role === 'U' ? auth()->user()->nohp : old('nohp') }}"
+    placeholder="Masukkan no handphone"
+    {{ auth()->user()->role === 'U' ? 'readonly' : '' }}>
                             @error('nohp')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -29,8 +31,10 @@
                         <div class="col-md-6">
                             <label for="alamat" class="form-label">Alamat</label>
                             <input type="text" name="alamat" id="alamat"
-                                class="form-control @error('alamat') is-invalid @enderror" value="{{ old('alamat') }}"
-                                placeholder="Masukkan alamat">
+    class="form-control @error('alamat') is-invalid @enderror"
+    value="{{ auth()->user()->role === 'U' ? auth()->user()->alamat : old('alamat') }}"
+    placeholder="Masukkan alamat"
+    {{ auth()->user()->role === 'U' ? 'readonly' : '' }}>
                             @error('alamat')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
