@@ -44,9 +44,7 @@
                                 <th>Suku Cadang</th>
                                 <th>Total Biaya</th>
                                 <th>Tanggal</th>
-                                @if(auth()->user()->role !== 'U')
-                                    <th>Status</th>
-                                @endif
+                                <th>Status</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
@@ -103,6 +101,29 @@
                                             @endif
                                         </td>
                                     @endif
+                                    @if(auth()->user()->role === 'U')
+                                    <td>
+                                        @php
+                                            $statusLabels = [
+                                                'pending' => 'Pending',
+                                                'in_progress' => 'Sedang Dikerjakan',
+                                                'completed' => 'Selesai',
+                                                'cancelled' => 'Dibatalkan'
+                                            ];
+                                        @endphp
+                                        <span class="badge 
+                                            @switch($item->status)
+                                                @case('pending') bg-secondary @break
+                                                @case('in_progress') bg-warning text-dark @break
+                                                @case('completed') bg-success @break
+                                                @case('cancelled') bg-danger @break
+                                                @default bg-light text-dark
+                                            @endswitch
+                                        ">
+                                            {{ $statusLabels[$item->status] ?? $item->status }}
+                                        </span>
+                                    </td>
+                                @endif
                                     <td class="d-flex gap-1 justify-content-center">
                                         <a href="{{ route('transaksiBengkel.show', $item->id) }}"
                                             class="btn btn-info btn-sm" title="Lihat"><i class="ti ti-eye"></i></a>
